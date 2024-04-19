@@ -6,13 +6,11 @@ public class QuestionDTO {
 
     private Integer pkQuestion;
     private String nom;
-    private String quizName;
     private List<ReponseDTO> reponses;
 
-    public QuestionDTO(Integer pkQuestion, String nom, String quizName, List<ReponseDTO> reponses) {
+    public QuestionDTO(Integer pkQuestion, String nom, List<ReponseDTO> reponses) {
         this.pkQuestion = pkQuestion;
         this.nom = nom;
-        this.quizName = quizName;
         this.reponses = reponses;
     }
 
@@ -31,14 +29,6 @@ public class QuestionDTO {
 
     public void setNom(String nom) {
         this.nom = nom;
-    }
-
-    public String getQuizName() {
-        return quizName;
-    }
-
-    public void setQuizName(String quizName) {
-        this.quizName = quizName;
     }
 
     public List<ReponseDTO> getReponses() {

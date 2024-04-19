@@ -2,11 +2,6 @@ package ch.morisettid.youquizcreation.model;
 
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import org.apache.tomcat.util.json.JSONParser;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

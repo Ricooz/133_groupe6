@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ch.morisettid.youquizcreation.dto.QuizDTO;
 import ch.morisettid.youquizcreation.model.Quiz;
 import ch.morisettid.youquizcreation.services.QuizService;
 import jakarta.servlet.http.HttpSession;
@@ -37,8 +38,8 @@ public class QuizController {
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<Iterable<Quiz>> getAll() {
-        return new ResponseEntity<>(quizService.findAllQuiz(), HttpStatus.OK);
+    public ResponseEntity<Iterable<QuizDTO>> getAll() {
+        return new ResponseEntity<>(quizService.findAllQuizzes(), HttpStatus.OK);
     }
 
     @PostMapping(path = "/create")

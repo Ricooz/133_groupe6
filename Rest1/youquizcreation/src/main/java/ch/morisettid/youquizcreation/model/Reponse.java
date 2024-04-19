@@ -2,6 +2,7 @@ package ch.morisettid.youquizcreation.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,6 +25,10 @@ public class Reponse {
 
     @Column(name = "Correct")
     private Boolean correct;
+
+    @ManyToOne(fetch =  FetchType.LAZY)
+    @JoinColumn(name = "FK_Question")
+    private Question question;
 
     // Getters et Setters
     public Integer getPkReponse() {
@@ -48,5 +53,13 @@ public class Reponse {
 
     public void setCorrect(Boolean correct) {
         this.correct = correct;
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
     }
 }
