@@ -28,7 +28,6 @@ public class UserService {
 
         String hashedPassword = passwordEncoder.encode(password);
 
-
         User user = new User();
         userRepository.findByUsername(username);
         user.setUsername(username);

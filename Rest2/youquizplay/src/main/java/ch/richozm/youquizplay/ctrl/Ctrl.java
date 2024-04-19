@@ -23,7 +23,12 @@ public class Ctrl {
         this.userQuizService = userQuizService;
     }
 
-    @GetMapping(path = "/login")
+    @GetMapping("/")
+    public String getNothing() {
+        return "Test";
+    }
+
+    @PostMapping(path = "/login")
     public @ResponseBody Boolean checkLogin(@RequestParam String username, @RequestParam String password) {
         return userService.checkLogin(username, password);
     }

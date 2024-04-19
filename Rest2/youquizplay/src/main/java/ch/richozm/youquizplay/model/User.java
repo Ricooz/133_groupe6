@@ -10,16 +10,16 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "T_User")
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "PK_User")
+    private Integer pkUser;
+    
     @Column(name = "Username")
     private String username;
 
     @Column(name = "Password")
     private String password;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PK_User")
-    private Integer pk_user;
 
     public String getUsername() {
         return username;
@@ -30,7 +30,7 @@ public class User {
     }
 
     public Integer getPKUser() {
-        return pk_user;
+        return pkUser;
     }
 
     public void setUsername(String username) {
@@ -42,6 +42,6 @@ public class User {
     }
 
     public void setPKUser(Integer pk) {
-        this.pk_user = pk;
+        this.pkUser = pk;
     }
 }
