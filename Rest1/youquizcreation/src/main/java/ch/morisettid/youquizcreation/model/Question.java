@@ -1,7 +1,10 @@
 package ch.morisettid.youquizcreation.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import ch.morisettid.youquizcreation.dto.QuestionDTO;
+import ch.morisettid.youquizcreation.dto.ReponseDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -64,5 +67,14 @@ public class Question {
 
     public void setReponses(List<Reponse> reponses) {
         this.reponses = reponses;
+    }
+
+    public QuestionDTO toDTO() {
+        List<ReponseDTO> reponseDTOs = new ArrayList<>();
+        for (Reponse reponse : reponses) {
+            reponseDTOs.add(reponse.toDTO());
+        }
+
+        return new QuestionDTO(pkQuestion, nom, reponseDTOs);
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ch.morisettid.youquizcreation.dto.QuizDTO;
-import ch.morisettid.youquizcreation.model.Quiz;
 import ch.morisettid.youquizcreation.services.QuizService;
-import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/quiz")
@@ -27,33 +26,42 @@ public class QuizController {
         this.quizService = quizService;
     }
 
-    @GetMapping("/get")
-    public ResponseEntity<?> get(@RequestParam Integer pkQuiz) {
-        Quiz quiz = quizService.findQuiz(pkQuiz);
-        if (quiz != null) {
-            return new ResponseEntity<>(quiz, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("PK Quiz invalide", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @GetMapping("/getAll")
+    @GetMapping("")
     public ResponseEntity<Iterable<QuizDTO>> getAll() {
         return new ResponseEntity<>(quizService.findAllQuizzes(), HttpStatus.OK);
     }
 
-    @PostMapping(path = "/create")
-    public ResponseEntity<String> create(@RequestParam String username) {
-        return ResponseEntity.ok("Logout réussi");
+    @GetMapping("/get/{id}")
+    public ResponseEntity<?> get(@PathVariable("id") Integer pkQuiz) {
+        QuizDTO quizDTO = quizService.findQuiz(pkQuiz);
+        if (quizDTO != null) {
+            return new ResponseEntity<>(quizDTO, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("PK quiz invalide", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping(path = "/add")
+    public ResponseEntity<QuizDTO> add(@RequestParam String nom, @RequestParam String description) {
+        return new ResponseEntity<>(quizService.addQuiz(nom, description), HttpStatus.OK);
     }
 
     @PutMapping(value = "/update")
-    public ResponseEntity<String> update() {
-        return ResponseEntity.ok("Logout réussi");
+    public ResponseEntity<?> update(@RequestParam Integer pkQuiz,  String nom, @RequestParam String description) {
+        QuizDTO quizDTO = quizService.updateQuiz(pkQuiz, nom, description);
+        if (quizDTO != null) {
+            return new ResponseEntity<>(quizDTO, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("PK quiz invalide", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @DeleteMapping(value = "/delete")
-    public ResponseEntity<String> delete() {
-        return ResponseEntity.ok("Logout réussi");
+    public ResponseEntity<String> delete(@RequestParam Integer pkQuiz) {
+        if (quizService.deleteQuiz(pkQuiz)) {
+            return new ResponseEntity<>("Quiz supprimé avec succès", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("PK quiz invalide", HttpStatus.BAD_REQUEST);
+        }
     }
 }

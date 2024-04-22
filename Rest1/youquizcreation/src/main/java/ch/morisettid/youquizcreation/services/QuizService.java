@@ -5,17 +5,12 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ch.morisettid.youquizcreation.dto.QuestionDTO;
 import ch.morisettid.youquizcreation.dto.QuizDTO;
-import ch.morisettid.youquizcreation.dto.ReponseDTO;
-import ch.morisettid.youquizcreation.model.Question;
 import ch.morisettid.youquizcreation.model.Quiz;
-import ch.morisettid.youquizcreation.model.Reponse;
 import ch.morisettid.youquizcreation.repositories.QuizRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class QuizService {
@@ -27,8 +22,14 @@ public class QuizService {
         this.quizRepository = quizRepository;
     }
 
-    public Quiz findQuiz(Integer pkQuiz) {
-        return quizRepository.findById(pkQuiz).orElse(null);
+    public QuizDTO findQuiz(Integer pkQuiz) {
+        Quiz quiz = quizRepository.findById(pkQuiz).orElse(null);
+        QuizDTO quizDTO = null;
+        if (quiz != null) {
+            quizDTO = quiz.toDTO();
+        }
+
+        return quizDTO;
     }
 
     public Iterable<QuizDTO> findAllQuizzes() {
@@ -36,22 +37,42 @@ public class QuizService {
         List<QuizDTO> quizDTOs = new ArrayList<>();
 
         for (Quiz quiz : quizzes) {
-            List<QuestionDTO> questionDTOs = new ArrayList<>();
-            for (Question question : quiz.getQuestions()) {
-                List<ReponseDTO> reponseDTOs = new ArrayList<>();
-                for (Reponse reponse : question.getReponses()) {
-                    reponseDTOs.add(new ReponseDTO(reponse.getPkReponse(), reponse.getNom(),  reponse.isCorrect()));
-                }
-                questionDTOs.add(new QuestionDTO(question.getPkQuestion(), question.getNom(), reponseDTOs));
-            }
-            quizDTOs.add(new QuizDTO(quiz.getPkQuiz(), quiz.getNom(), quiz.getDescription(), questionDTOs));
+            quizDTOs.add(quiz.toDTO());
         }
 
         return quizDTOs;
     }
 
     @Transactional
-    public Boolean addNewSkieur(String name, Integer position, Integer paysId) {
-        return true;
+    public QuizDTO addQuiz(String nom, String description) {
+        Quiz quiz = new Quiz();
+        quiz.setNom(nom);
+        quiz.setDescription(description);
+        quizRepository.save(quiz);
+        return quiz.toDTO();
+    }
+
+    @Transactional
+    public QuizDTO updateQuiz(Integer pkQuiz, String nom, String description) {
+        Quiz quiz = quizRepository.findById(pkQuiz).orElse(null);
+        QuizDTO quizDTO = null;
+        if (quiz != null) {
+            quiz.setNom(nom);
+            quiz.setDescription(description);
+            quizRepository.save(quiz);
+            quizDTO = quiz.toDTO();
+        }
+
+        return quizDTO;
+    }
+
+    @Transactional
+    public Boolean deleteQuiz(Integer pkQuiz) {
+        Boolean exist = quizRepository.existsById(pkQuiz);
+        if (exist) {
+            quizRepository.deleteById(pkQuiz);
+        }
+
+        return exist;
     }
 }

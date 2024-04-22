@@ -1,7 +1,10 @@
 package ch.morisettid.youquizcreation.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import ch.morisettid.youquizcreation.dto.QuestionDTO;
+import ch.morisettid.youquizcreation.dto.QuizDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,6 +31,11 @@ public class Quiz {
 
     @OneToMany(mappedBy = "quiz")
     private List<Question> questions;
+
+    // Constructeur
+    public Quiz() {
+        questions = new ArrayList<>();
+    }
 
     // Getters et Setters
     public Integer getPkQuiz() {
@@ -60,5 +68,14 @@ public class Quiz {
 
     public void setQuestions(List<Question> questions) {
         this.questions = questions;
+    }
+
+    public QuizDTO toDTO() {
+        List<QuestionDTO> questionDTOs = new ArrayList<>();
+        for (Question question : questions) {
+            questionDTOs.add(question.toDTO());
+        }
+
+        return new QuizDTO(pkQuiz, nom, description, questionDTOs);
     }
 }

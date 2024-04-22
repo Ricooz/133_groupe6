@@ -1,5 +1,6 @@
 package ch.morisettid.youquizcreation.model;
 
+import ch.morisettid.youquizcreation.dto.ReponseDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -61,5 +62,9 @@ public class Reponse {
 
     public void setQuestion(Question question) {
         this.question = question;
+    }
+
+    public ReponseDTO toDTO() {
+        return new ReponseDTO(pkReponse, nom, correct);
     }
 }
