@@ -3,27 +3,26 @@ package ch.richozm.youquizplay.ctrl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import ch.richozm.youquizplay.service.UserQuizService;
 import ch.richozm.youquizplay.service.UserService;
 
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @RestController
-public class Ctrl {
+@RequestMapping("/user")
+public class UserCtrl {
 
     private UserService userService;
-    private UserQuizService userQuizService;
 
     @Autowired
-    public Ctrl(UserService userService, UserQuizService userQuizService) {
+    public UserCtrl(UserService userService) {
         this.userService = userService;
-        this.userQuizService = userQuizService;
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public String getNothing() {
         return "Test";
     }

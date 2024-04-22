@@ -8,7 +8,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "TR_User_Quiz")
 public class UserQuiz {
-    @Column(name = "Like")
+    @Column(name = "QuizLike")
     private boolean like;
 
     @Column(name = "NbrPoints")
@@ -17,6 +17,9 @@ public class UserQuiz {
     @Id
     @Column(name = "PFK_Quiz")
     private Integer quiz;
+
+    @Column(name = "PFK_User")
+    private Integer user;
 
     public Boolean getLike() {
         return like;
@@ -30,6 +33,10 @@ public class UserQuiz {
         return quiz;
     }
 
+    public Integer getUser() {
+        return user;
+    }
+
     public void setLike(Boolean like) {
         this.like = like;
     }
@@ -40,5 +47,9 @@ public class UserQuiz {
 
     public void setQuiz(Integer quiz) {
         this.quiz = quiz;
+    }
+
+    public void setUser(Integer user) {
+        this.user = user;
     }
 }
