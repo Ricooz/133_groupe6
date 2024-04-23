@@ -42,8 +42,13 @@ public class QuestionController {
     }
 
     @PostMapping(path = "/add")
-    public ResponseEntity<QuestionDTO> add(@RequestParam String nom, @RequestParam Integer pkQuiz) {
-        return new ResponseEntity<>(questionService.addQuestion(nom, pkQuiz), HttpStatus.OK);
+    public ResponseEntity<?> add(@RequestParam String nom, @RequestParam Integer pkQuiz) {
+        QuestionDTO questionDTO = questionService.addQuestion(nom, pkQuiz);
+        if (questionDTO != null) {
+            return new ResponseEntity<>(questionDTO, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("PK quiz invalide", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping(value = "/update")

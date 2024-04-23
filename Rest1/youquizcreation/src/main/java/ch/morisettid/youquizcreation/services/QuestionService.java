@@ -53,6 +53,7 @@ public class QuestionService {
         if (quiz != null) {
             Question question = new Question();
             question.setNom(nom);
+            question.setQuiz(quiz);
             questionRepository.save(question);
             questionDTO = question.toDTO();
         }
@@ -77,7 +78,7 @@ public class QuestionService {
     public Boolean deleteQuestion(Integer pkQuestion) {
         Boolean exist = questionRepository.existsById(pkQuestion);
         if (exist) {
-            quizRepository.deleteById(pkQuestion);
+            questionRepository.deleteById(pkQuestion);
         }
 
         return exist;

@@ -5,6 +5,7 @@ import java.util.List;
 
 import ch.morisettid.youquizcreation.dto.QuestionDTO;
 import ch.morisettid.youquizcreation.dto.QuizDTO;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,7 +30,7 @@ public class Quiz {
     @Column(name = "Description", length = 250)
     private String description;
 
-    @OneToMany(mappedBy = "quiz")
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
     private List<Question> questions;
 
     // Constructeur

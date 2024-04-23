@@ -5,6 +5,7 @@ import java.util.List;
 
 import ch.morisettid.youquizcreation.dto.QuestionDTO;
 import ch.morisettid.youquizcreation.dto.ReponseDTO;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -33,8 +34,13 @@ public class Question {
     @JoinColumn(name = "FK_Quiz")
     private Quiz quiz;
 
-    @OneToMany(mappedBy = "question")
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<Reponse> reponses;
+
+    // Constructeur
+    public Question() {
+        reponses = new ArrayList<>();
+    }
 
     // Getters et Setters
     public Integer getPkQuestion() {
