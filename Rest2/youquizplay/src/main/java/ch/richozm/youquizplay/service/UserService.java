@@ -1,6 +1,7 @@
 package ch.richozm.youquizplay.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import ch.richozm.youquizplay.model.User;
@@ -23,16 +24,27 @@ public class UserService {
             return "Un utilisateur avec ce nom d'utilisateur existe déjà.";
         }
 
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String hashedPassword = passwordEncoder.encode(password);
+
         User user = new User();
         userRepository.findByUsername(username);
         user.setUsername(username);
-        user.setPassword(password);
+        user.setPassword(hashedPassword);
         userRepository.save(user);
         return "User " + username + " sauvegardé avec succès !";
     }
 
     @Transactional
     public Boolean checkLogin(String username, String password) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String hashedPassword = passwordEncoder.encode(password);
+        User existingUsername = userRepository.findByUsername(username);
+        if (existingUsername != null) {
+            if (existingUsername.getPassword().equals(hashedPassword)) {
+                return true;
+            }
+        }
         return false;
     }
 }

@@ -22,12 +22,7 @@ public class UserCtrl {
         this.userService = userService;
     }
 
-    @GetMapping("")
-    public String getNothing() {
-        return "Test";
-    }
-
-    @PostMapping(path = "/login")
+    @GetMapping(path = "/login")
     public @ResponseBody Boolean checkLogin(@RequestParam String username, @RequestParam String password) {
         return userService.checkLogin(username, password);
     }
