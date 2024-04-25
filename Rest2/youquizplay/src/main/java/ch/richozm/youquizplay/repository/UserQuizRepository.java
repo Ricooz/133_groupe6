@@ -8,5 +8,6 @@ import ch.richozm.youquizplay.model.UserQuiz;
 // CRUD refers Create, Read, Update, Delete
 
 public interface UserQuizRepository extends CrudRepository<UserQuiz, Integer> {
-
+    UserQuiz findByUserIdAndQuizId(Integer userId, Integer quizId);
+    UserQuiz findByQuizTitle(String quizTile);
 }
