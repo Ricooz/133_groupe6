@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ch.morisettid.youquizcreation.dto.QuizDTO;
+import ch.morisettid.youquizcreation.exceptions.IdNotFoundException;
+import ch.morisettid.youquizcreation.exceptions.UnauthorizedUserException;
 import ch.morisettid.youquizcreation.model.Quiz;
 import ch.morisettid.youquizcreation.repositories.QuizRepository;
 
@@ -43,36 +45,60 @@ public class QuizService {
         return quizDTOs;
     }
 
+    public Iterable<QuizDTO> findUserQuizzes(Integer pkUser) {
+        Iterable<Quiz> quizzes = quizRepository.findAll();
+        List<QuizDTO> quizDTOs = new ArrayList<>();
+
+        for (Quiz quiz : quizzes) {
+            quizDTOs.add(quiz.toDTO());
+        }
+
+        return quizDTOs;
+    }
+
     @Transactional
-    public QuizDTO addQuiz(String nom, String description) {
+    public QuizDTO addQuiz(String nom, String description, String username) {
         Quiz quiz = new Quiz();
         quiz.setNom(nom);
         quiz.setDescription(description);
+        quiz.setUsername(username);
         quizRepository.save(quiz);
         return quiz.toDTO();
     }
 
     @Transactional
-    public QuizDTO updateQuiz(Integer pkQuiz, String nom, String description) {
+    public QuizDTO updateQuiz(Integer pkQuiz, String nom, String description, String username) throws IdNotFoundException, UnauthorizedUserException {
         Quiz quiz = quizRepository.findById(pkQuiz).orElse(null);
         QuizDTO quizDTO = null;
-        if (quiz != null) {
-            quiz.setNom(nom);
-            quiz.setDescription(description);
-            quizRepository.save(quiz);
-            quizDTO = quiz.toDTO();
+
+        if (quiz != null) { // Vérifie si la pk est valide
+            if (quiz.getUsername().equals(username)) { // Change seulement si l'utilisateur le détient
+                quiz.setNom(nom);
+                quiz.setDescription(description);
+                quizRepository.save(quiz);
+                quizDTO = quiz.toDTO();
+            } else {
+                throw new UnauthorizedUserException("Tentative non autorisée de mise à jour du quiz. Le quiz n'appartient pas au nom d'utilisateur fourni.");
+            }
+        } else {
+            throw new IdNotFoundException("Quiz non trouvé. Id du quiz fournie invalide.");
         }
 
         return quizDTO;
     }
 
     @Transactional
-    public Boolean deleteQuiz(Integer pkQuiz) {
-        Boolean exist = quizRepository.existsById(pkQuiz);
-        if (exist) {
-            quizRepository.deleteById(pkQuiz);
-        }
+    public void deleteQuiz(Integer pkQuiz, String username) throws UnauthorizedUserException, IdNotFoundException {
+        Quiz quiz = quizRepository.findById(pkQuiz).orElse(null);
 
-        return exist;
+        if (quiz != null) { // Vérifie si la pk est valide
+            if (quiz.getUsername().equals(username)) { // Change seulement si l'utilisateur le détient
+                quizRepository.deleteById(pkQuiz);
+            } else {
+                throw new UnauthorizedUserException("Tentative non autorisée de suppresion du quiz. Le quiz n'appartient pas au nom d'utilisateur fourni.");
+            }
+        } else {
+            throw new IdNotFoundException("Quiz non trouvé. Id du quiz fournie invalide.");
+        }
     }
 }

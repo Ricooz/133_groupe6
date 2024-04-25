@@ -7,14 +7,20 @@ public class QuizDTO {
     private Integer pkQuiz;
     private String nom;
     private String description;
+    private String username;
     private List<QuestionDTO> questions;
 
-    // Constructor
-    public QuizDTO(Integer pkQuiz, String nom, String description, List<QuestionDTO> questions) {
+    // Constructors
+    public QuizDTO() {
+        
+    }
+
+    public QuizDTO(Integer pkQuiz, String nom, String description, String username, List<QuestionDTO> questions) {
         this.pkQuiz = pkQuiz;
         this.nom = nom;
         this.description = description;
         this.questions = questions;
+        this.username = username;
     }
 
     // Getters and setters...
@@ -40,6 +46,14 @@ public class QuizDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public List<QuestionDTO> getQuestions() {

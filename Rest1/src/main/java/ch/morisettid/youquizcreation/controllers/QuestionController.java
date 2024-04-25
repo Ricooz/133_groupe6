@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ch.morisettid.youquizcreation.dto.QuestionDTO;
+import ch.morisettid.youquizcreation.exceptions.IdNotFoundException;
+import ch.morisettid.youquizcreation.exceptions.UnauthorizedUserException;
 import ch.morisettid.youquizcreation.services.QuestionService;
 
 @RestController
@@ -37,36 +39,41 @@ public class QuestionController {
         if (questionDTO != null) {
             return new ResponseEntity<>(questionDTO, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("Pk question invalide", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Quiz non trouvé. Id du quiz fournie invalide.", HttpStatus.NOT_FOUND);
         }
     }
 
     @PostMapping(path = "/add")
-    public ResponseEntity<?> add(@RequestParam String nom, @RequestParam Integer pkQuiz) {
-        QuestionDTO questionDTO = questionService.addQuestion(nom, pkQuiz);
-        if (questionDTO != null) {
-            return new ResponseEntity<>(questionDTO, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("PK quiz invalide", HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> add(@RequestParam String nom, @RequestParam Integer pkQuiz, @RequestParam String username) {
+        try {
+            return new ResponseEntity<>(questionService.addQuestion(nom, pkQuiz, username), HttpStatus.OK);
+        } catch (IdNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (UnauthorizedUserException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
 
     @PutMapping(value = "/update")
-    public ResponseEntity<?> update(@RequestParam Integer pkQuestion,  String nom) {
-        QuestionDTO questionDTO = questionService.updateQuestion(pkQuestion, nom);
-        if (questionDTO != null) {
-            return new ResponseEntity<>(questionDTO, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("PK question invalide", HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> update(@RequestParam Integer pkQuestion,  String nom, @RequestParam String username) {
+        try {
+            return new ResponseEntity<>(questionService.updateQuestion(pkQuestion, nom, username), HttpStatus.OK);
+        } catch (IdNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (UnauthorizedUserException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
 
     @DeleteMapping(value = "/delete")
-    public ResponseEntity<String> delete(@RequestParam Integer pkQuestion) {
-        if (questionService.deleteQuestion(pkQuestion)) {
-            return new ResponseEntity<>("Question supprimée avec succès", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("PK question invalide", HttpStatus.NOT_FOUND);
+    public ResponseEntity<String> delete(@RequestParam Integer pkQuestion, @RequestParam String username) {
+        try {
+            questionService.deleteQuestion(pkQuestion, username);
+            return new ResponseEntity<>("Question supprimée avec succès.", HttpStatus.OK);
+        } catch (IdNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (UnauthorizedUserException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
 }

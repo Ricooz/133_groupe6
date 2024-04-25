@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ch.morisettid.youquizcreation.dto.QuizDTO;
+import ch.morisettid.youquizcreation.exceptions.IdNotFoundException;
+import ch.morisettid.youquizcreation.exceptions.UnauthorizedUserException;
 import ch.morisettid.youquizcreation.services.QuizService;
 
 @RestController
@@ -31,37 +33,46 @@ public class QuizController {
         return new ResponseEntity<>(quizService.findAllQuizzes(), HttpStatus.OK);
     }
 
-    @GetMapping("/get/{id}")
-    public ResponseEntity<?> get(@PathVariable("id") Integer pkQuiz) {
+    @GetMapping("/get/{quizId}")
+    public ResponseEntity<?> get(@PathVariable("quizId") Integer pkQuiz) {
         QuizDTO quizDTO = quizService.findQuiz(pkQuiz);
         if (quizDTO != null) {
             return new ResponseEntity<>(quizDTO, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("PK quiz invalide", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Quiz non trouvé. Id du quiz fournie invalide.", HttpStatus.NOT_FOUND);
         }
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<Iterable<QuizDTO>> getUserQuizzes(@PathVariable("userId") Integer pkUser) {
+        return new ResponseEntity<>(quizService.findUserQuizzes(pkUser), HttpStatus.OK);
+    }
+
     @PostMapping(path = "/add")
-    public ResponseEntity<QuizDTO> add(@RequestParam String nom, @RequestParam String description) {
-        return new ResponseEntity<>(quizService.addQuiz(nom, description), HttpStatus.OK);
+    public ResponseEntity<QuizDTO> add(@RequestParam String nom, @RequestParam String description, @RequestParam String username) {
+        return new ResponseEntity<>(quizService.addQuiz(nom, description, username), HttpStatus.OK);
     }
 
     @PutMapping(value = "/update")
-    public ResponseEntity<?> update(@RequestParam Integer pkQuiz,  String nom, @RequestParam String description) {
-        QuizDTO quizDTO = quizService.updateQuiz(pkQuiz, nom, description);
-        if (quizDTO != null) {
-            return new ResponseEntity<>(quizDTO, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("PK quiz invalide", HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> update(@RequestParam Integer pkQuiz,  String nom, @RequestParam String description, @RequestParam String username) {
+        try {
+            return new ResponseEntity<>(quizService.updateQuiz(pkQuiz, nom, description, username), HttpStatus.OK);
+        } catch (IdNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (UnauthorizedUserException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
 
     @DeleteMapping(value = "/delete")
-    public ResponseEntity<String> delete(@RequestParam Integer pkQuiz) {
-        if (quizService.deleteQuiz(pkQuiz)) {
-            return new ResponseEntity<>("Quiz supprimé avec succès", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("PK quiz invalide", HttpStatus.NOT_FOUND);
+    public ResponseEntity<String> delete(@RequestParam Integer pkQuiz, @RequestParam String username) {
+        try {
+            quizService.deleteQuiz(pkQuiz, username);
+            return new ResponseEntity<>("Quiz supprimé avec succès.", HttpStatus.OK);
+        } catch (IdNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (UnauthorizedUserException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
 }

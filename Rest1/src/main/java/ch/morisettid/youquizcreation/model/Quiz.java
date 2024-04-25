@@ -30,6 +30,9 @@ public class Quiz {
     @Column(name = "Description", length = 250)
     private String description;
 
+    @Column(name = "Username", length = 250)
+    private String username;
+
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
     private List<Question> questions;
 
@@ -63,6 +66,14 @@ public class Quiz {
         this.description = description;
     }
 
+    public String getUsername() {
+        return this.username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public List<Question> getQuestions() {
         return this.questions;
     }
@@ -77,6 +88,6 @@ public class Quiz {
             questionDTOs.add(question.toDTO());
         }
 
-        return new QuizDTO(pkQuiz, nom, description, questionDTOs);
+        return new QuizDTO(pkQuiz, nom, description, username, questionDTOs);
     }
 }
