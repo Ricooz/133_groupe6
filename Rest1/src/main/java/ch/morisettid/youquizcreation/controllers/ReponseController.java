@@ -37,7 +37,7 @@ public class ReponseController {
         if (reponseDTO != null) {
             return new ResponseEntity<>(reponseDTO, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("Pk reponse invalide", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Pk reponse invalide", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -57,7 +57,7 @@ public class ReponseController {
         if (reponseDTO != null) {
             return new ResponseEntity<>(reponseDTO, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("PK reponse invalide", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("PK reponse invalide", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -66,7 +66,7 @@ public class ReponseController {
         if (reponseService.deleteReponse(pkReponse)) {
             return new ResponseEntity<>("Reponse supprimée avec succès", HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("PK reponse invalide", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("PK reponse invalide", HttpStatus.NOT_FOUND);
         }
     }
 }

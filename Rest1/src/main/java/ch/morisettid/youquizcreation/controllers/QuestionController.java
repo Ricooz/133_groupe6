@@ -37,7 +37,7 @@ public class QuestionController {
         if (questionDTO != null) {
             return new ResponseEntity<>(questionDTO, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("Pk question invalide", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Pk question invalide", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -57,7 +57,7 @@ public class QuestionController {
         if (questionDTO != null) {
             return new ResponseEntity<>(questionDTO, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("PK question invalide", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("PK question invalide", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -66,7 +66,7 @@ public class QuestionController {
         if (questionService.deleteQuestion(pkQuestion)) {
             return new ResponseEntity<>("Question supprimée avec succès", HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("PK question invalide", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("PK question invalide", HttpStatus.NOT_FOUND);
         }
     }
 }

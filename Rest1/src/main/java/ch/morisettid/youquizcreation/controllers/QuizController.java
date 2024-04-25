@@ -37,7 +37,7 @@ public class QuizController {
         if (quizDTO != null) {
             return new ResponseEntity<>(quizDTO, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("PK quiz invalide", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("PK quiz invalide", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -52,7 +52,7 @@ public class QuizController {
         if (quizDTO != null) {
             return new ResponseEntity<>(quizDTO, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("PK quiz invalide", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("PK quiz invalide", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -61,7 +61,7 @@ public class QuizController {
         if (quizService.deleteQuiz(pkQuiz)) {
             return new ResponseEntity<>("Quiz supprimé avec succès", HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("PK quiz invalide", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("PK quiz invalide", HttpStatus.NOT_FOUND);
         }
     }
 }
