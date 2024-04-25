@@ -21,26 +21,28 @@ public class UserQuizService {
     }
 
     @Transactional
-    public void likeQuiz(String username, String quizTitle, Boolean liked) {
-        UserQuiz userQuiz = userQuizRepository.findByQuizTitle(quizTitle);
-        User user = userRepository.findByUsername(username);
-        userQuiz.setUser(user.getPKUser());
-        userQuiz.setQuiz(userQuiz.getQuiz());
-        userQuiz.setLike(liked);
-        userQuizRepository.save(userQuiz);
-    }
+    public void likeQuiz(Integer userId, Integer quizId) {
+        //recheche user selon son id
+        User user = userRepository.findBypkUser(userId);
+        UserQuiz userQuiz = userQuizRepository.findByfkUserAndQuizId(user, quizId);
 
-    @Transactional
-    public void unLikeQuiz(Integer userId, Integer quizId, Boolean liked) {
-        UserQuiz userQuiz = userQuizRepository.findByUserIdAndQuizId(userId, quizId);
         if (userQuiz != null) {
-            userQuizRepository.delete(userQuiz);
+            userQuiz = new UserQuiz();
+            userQuiz.setLike(!userQuiz.getLike());
+            userQuiz.setUser(user);
+            userQuiz.setQuiz(quizId);
+            userQuizRepository.save(userQuiz);
         }
     }
 
     @Transactional
-    public String validateQuiz(Integer quizId) {
-        return "";
+    public String contabilisePoints(Integer userId, Integer quizId, Integer points) {
+        // Rechercher l'utilisateur par son identifiant unique
+        User user = userRepository.findBypkUser(userId);
+        UserQuiz userQuiz = userQuizRepository.findByfkUserAndQuizId(user, quizId);
+        if (userQuiz != null) {
+            userQuiz.setPoints(points);
+        }
+        return "Points ajoutés avec succès";
     }
-    
 }

@@ -10,4 +10,5 @@ import ch.richozm.youquizplay.model.User;
 public interface UserRepository extends CrudRepository<User, Integer> {
     User findByUsername(String username);
     User findByPassword(String password);
+    User findBypkUser(Integer pk_user);
 }

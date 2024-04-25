@@ -27,7 +27,7 @@ public class UserCtrl {
         return userService.checkLogin(username, password);
     }
 
-    @PostMapping(path = "/addUser")
+    @PostMapping(path = "/add")
     public @ResponseBody String addUser(@RequestParam String username, @RequestParam String password) {
         return userService.addUser(username, password);
     }

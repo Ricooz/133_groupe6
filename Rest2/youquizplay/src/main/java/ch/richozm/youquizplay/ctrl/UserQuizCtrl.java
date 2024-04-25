@@ -1,14 +1,12 @@
 package ch.richozm.youquizplay.ctrl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import ch.richozm.youquizplay.service.UserQuizService;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
@@ -22,18 +20,13 @@ public class UserQuizCtrl {
         this.userQuizService = userQuizService;
     }
 
-    @PostMapping("/likeQuiz")
-    public void likeQuiz(@RequestParam String username, @RequestParam String quizTitle, @RequestParam Boolean liked) {
-        userQuizService.likeQuiz(username, quizTitle, liked);
+    @PostMapping("/like")
+    public void likeQuiz(@RequestParam Integer userId, @RequestParam Integer quizId) {
+        userQuizService.likeQuiz(userId, quizId);
     }
 
-    @PostMapping("/unLikeQuiz")
-    public void unLikeQuiz(@RequestParam Integer userId, @RequestParam Integer quizId, @RequestParam Boolean liked) {
-        userQuizService.unLikeQuiz(userId, quizId, liked);
-    }
-
-    @PostMapping("/validateQuiz")
-    public void validateQuiz(@RequestParam Integer quizId) {
-        userQuizService.validateQuiz(quizId);
+    @PostMapping("/points")
+    public @ResponseBody String contabilisePoints(Integer userId, Integer quizId, Integer points) {
+        return userQuizService.contabilisePoints(userId, quizId, points);
     }
 }

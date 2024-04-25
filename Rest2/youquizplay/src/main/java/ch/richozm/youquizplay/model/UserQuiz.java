@@ -2,24 +2,38 @@ package ch.richozm.youquizplay.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "TR_User_Quiz")
+@Table(name = "tr_user_quiz")
 public class UserQuiz {
-    @Column(name = "QuizLike")
-    private boolean like;
-
-    @Column(name = "NbrPoints")
-    private Integer points;
 
     @Id
-    @Column(name = "PFK_Quiz")
-    private Integer quiz;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "pk")
+    private Integer id; 
 
-    @Column(name = "PFK_User")
-    private Integer user;
+    @Column(name = "quiz_like")
+    private Boolean like;
+
+    @Column(name = "nbr_points")
+    private Integer points;
+
+    @Column(name = "quizId")
+    private Integer quizId;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_user")
+    private User fkUser;
+
+    public Integer getId() {
+        return id;
+    }
 
     public Boolean getLike() {
         return like;
@@ -30,11 +44,15 @@ public class UserQuiz {
     }
 
     public Integer getQuiz() {
-        return quiz;
+        return quizId;
     }
 
-    public Integer getUser() {
-        return user;
+    public User getUser() {
+        return fkUser;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public void setLike(Boolean like) {
@@ -45,11 +63,11 @@ public class UserQuiz {
        this.points = points;
     }
 
-    public void setQuiz(Integer quiz) {
-        this.quiz = quiz;
+    public void setQuiz(Integer quizId) {
+        this.quizId = quizId;
     }
 
-    public void setUser(Integer user) {
-        this.user = user;
+    public void setUser( User fkUser) {
+        this.fkUser = fkUser;
     }
 }
