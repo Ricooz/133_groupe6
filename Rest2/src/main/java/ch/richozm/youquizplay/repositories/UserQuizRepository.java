@@ -10,5 +10,5 @@ import ch.richozm.youquizplay.model.UserQuiz;
 public interface UserQuizRepository extends JpaRepository<UserQuiz, Integer> {
     //UserQuiz findByUserAndQuizId(User user, Integer quizId);
     UserQuiz findByfkUserAndQuizId(User user, Integer quizId);
-
+    Integer countByQuizIdAndLikeIsTrue(Integer quizId);
 }

@@ -51,4 +51,10 @@ public class UserQuizService {
         }
         return "Points ajoutés avec succès";
     }
+
+    @Transactional
+    public Integer getNbrLikes(Integer quizId) {
+        Integer nbrLikes = userQuizRepository.countByQuizIdAndLikeIsTrue(quizId);
+        return nbrLikes;
+    }
 }
