@@ -63,7 +63,21 @@ public class UserQuizService {
     }
 
     @Transactional
-    public Integer getPoints(Integer userId) {
+    public Integer getPoints(Integer userId, Integer quizId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            return -1;
+        }
+
+        // Récupérer tous les UserQuiz pour l'utilisateur donné
+        UserQuiz userQuiz = userQuizRepository.findByfkUserAndQuizId(user, quizId);
+
+        // Retourner les points
+        return userQuiz.getPoints();
+    }
+
+    @Transactional
+    public Integer getAllPoints(Integer userId) {
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
             return -1;

@@ -154,61 +154,90 @@ public class QuizController {
     }
 
     @PostMapping(path = "/like")
-    public ResponseEntity<String> like(@RequestParam String nom, @RequestParam String description, @RequestParam String username) {
-        ResponseEntity<String> response = restTemplate.getForEntity(baseURLRest2 + "/userquiz/like", String.class);
-        return ResponseEntity.ok(response.getBody());
+    public ResponseEntity<String> like(HttpSession session, @RequestParam String nom, @RequestParam String description) {
+        // Vérifie si l'utilisateur est connecté
+        User user = (User) session.getAttribute("username");
+        String username = user.getUsername();
+        if (username != null) {
+            ResponseEntity<String> response = restTemplate.getForEntity(baseURLRest2 + "/userquiz/like", String.class);
+            return ResponseEntity.ok(response.getBody());
+        } else {
+            return new ResponseEntity<>("Connexion nécessaire pour le like d'un quiz.", HttpStatus.FORBIDDEN);
+        }
     }
 
     @PostMapping(path = "/submit")
-    public ResponseEntity<?> submit(@RequestBody QuizSubmission quizSubmission) {
-        ResponseEntity<Quiz> response = restTemplate.getForEntity(baseURLRest2 + "/get/" + quizSubmission.getPkQuiz(), Quiz.class);
-        Quiz quiz = response.getBody();
-
-        int points = 0;
-
-        // Parcourir chaque question dans quizSubmission
-        for (Question submittedQuestion : quizSubmission.getQuestions()) {
-            // Trouver la question correspondante dans le quiz
-            Question quizQuestion = quiz.getQuestions().stream()
-                .filter(q -> q.getPkQuestion().equals(submittedQuestion.getPkQuestion()))
-                .findFirst()
-                .orElse(null);
-
-            // Si la question n'existe pas dans le quiz, la passer
-            if (quizQuestion == null) {
-                continue;
+    public ResponseEntity<?> submit(HttpSession session, @RequestBody QuizSubmission quizSubmission) {
+        // Vérifie si l'utilisateur est connecté
+        User user = (User) session.getAttribute("username");
+        String username = user.getUsername();
+        if (username != null) {
+            ResponseEntity<Quiz> response = restTemplate.getForEntity(baseURLRest2 + "/get/" + quizSubmission.getPkQuiz(), Quiz.class);
+            Quiz quiz = response.getBody();
+            if (quiz == null) {
+                return new ResponseEntity<>("Quiz non trouvé. Id du quiz fourni invalide.", HttpStatus.NOT_FOUND);
             }
 
-            // Parcourir chaque réponse dans submittedQuestion
-            for (Reponse submittedResponse : submittedQuestion.getReponses()) {
-                // Trouver la réponse correspondante dans quizQuestion
-                Reponse quizResponse = quizQuestion.getReponses().stream()
-                    .filter(r -> r.getPkReponse().equals(submittedResponse.getPkReponse()))
+            int points = 0;
+
+            // Parcourir chaque question dans quizSubmission
+            for (Question submittedQuestion : quizSubmission.getQuestions()) {
+                // Trouver la question correspondante dans le quiz
+                Question quizQuestion = quiz.getQuestions().stream()
+                    .filter(q -> q.getPkQuestion().equals(submittedQuestion.getPkQuestion()))
                     .findFirst()
                     .orElse(null);
 
-                // Si la réponse n'existe pas dans quizQuestion, la passer
-                if (quizResponse == null) {
+                // Si la question n'existe pas dans le quiz, la passer
+                if (quizQuestion == null) {
                     continue;
                 }
 
-                // Si la réponse soumise est correcte, incrémenter les points
-                if (submittedResponse.isCorrect() && quizResponse.isCorrect()) {
-                    points++;
+                // Parcourir chaque réponse dans submittedQuestion
+                for (Reponse submittedResponse : submittedQuestion.getReponses()) {
+                    // Trouver la réponse correspondante dans quizQuestion
+                    Reponse quizResponse = quizQuestion.getReponses().stream()
+                        .filter(r -> r.getPkReponse().equals(submittedResponse.getPkReponse()))
+                        .findFirst()
+                        .orElse(null);
+
+                    // Si la réponse n'existe pas dans quizQuestion, la passer
+                    if (quizResponse == null) {
+                        continue;
+                    }
+
+                    // Si la réponse soumise est correcte, incrémenter les points
+                    if (submittedResponse.isCorrect() && quizResponse.isCorrect()) {
+                        points++;
+                    }
                 }
             }
+
+            // Ajoute les points
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("userId", String.valueOf(points));
+            params.put("quizId", String.valueOf(quiz.getPkQuiz()));
+            params.put("points", String.valueOf(points));
+            restTemplate.getForEntity(baseURLRest2 + "/userquiz/points/set", Quiz.class);
+
+            // Retourner le total des points
+            return ResponseEntity.ok(points);
+        } else {
+            return new ResponseEntity<>("Connexion nécessaire pour soumettre un quiz.", HttpStatus.FORBIDDEN);
         }
-
-        // Ajoute les points
-        
-
-        // Retourner le total des points
-        return ResponseEntity.ok(points);
     }
 
     @GetMapping(path = "/points")
-    public ResponseEntity<?> points(@RequestParam String username) {
-        
+    public ResponseEntity<?> points(HttpSession session, ) {
+        // Vérifie si l'utilisateur est connecté
+        User user = (User) session.getAttribute("username");
+        String username = user.getUsername();
+        if (username != null) {
+            ResponseEntity<String> response = restTemplate.getForEntity(baseURLRest2 + "/userquiz/like", String.class);
+            return ResponseEntity.ok(response.getBody());
+        } else {
+            return new ResponseEntity<>("Connexion nécessaire pour le like d'un quiz.", HttpStatus.FORBIDDEN);
+        }
     }
 
     public void refreshLike(Quiz quiz) {

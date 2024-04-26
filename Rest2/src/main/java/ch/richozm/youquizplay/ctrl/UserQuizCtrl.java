@@ -32,8 +32,18 @@ public class UserQuizCtrl {
     }
 
     @GetMapping("/points/get")
-    public ResponseEntity<String> getPoints(@RequestParam Integer userId) {
-        Integer points = userQuizService.getPoints(userId);
+    public ResponseEntity<String> getPoints(@RequestParam Integer userId, @RequestParam Integer quizId) {
+        Integer points = userQuizService.getPoints(userId, quizId);
+        if (points != -1) {
+            return new ResponseEntity<>(String.valueOf(points), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Utilisateur non trouvé. Id de l'utilisateur fournie invalide.", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/points/getAll")
+    public ResponseEntity<String> getAllPoints(@RequestParam Integer userId) {
+        Integer points = userQuizService.getAllPoints(userId);
         if (points != -1) {
             return new ResponseEntity<>(String.valueOf(points), HttpStatus.OK);
         } else {
