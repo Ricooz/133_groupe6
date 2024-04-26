@@ -16,12 +16,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import ch.emf.youquiz.beans.Question;
 import ch.emf.youquiz.beans.Quiz;
+import ch.emf.youquiz.beans.QuizSubmission;
+import ch.emf.youquiz.beans.Reponse;
 import ch.emf.youquiz.beans.User;
 import jakarta.servlet.http.HttpSession;
 
@@ -150,13 +154,61 @@ public class QuizController {
     }
 
     @PostMapping(path = "/like")
-    public ResponseEntity<?> add(@RequestParam String nom, @RequestParam String description, @RequestParam String username) {
-        return new ResponseEntity<>(quizService.addQuiz(nom, description, username), HttpStatus.OK);
+    public ResponseEntity<String> like(@RequestParam String nom, @RequestParam String description, @RequestParam String username) {
+        ResponseEntity<String> response = restTemplate.getForEntity(baseURLRest2 + "/userquiz/like", String.class);
+        return ResponseEntity.ok(response.getBody());
     }
 
     @PostMapping(path = "/submit")
-    public ResponseEntity<?> add(@RequestParam String nom, @RequestParam String description, @RequestParam String username) {
-        return new ResponseEntity<>(quizService.addQuiz(nom, description, username), HttpStatus.OK);
+    public ResponseEntity<?> submit(@RequestBody QuizSubmission quizSubmission) {
+        ResponseEntity<Quiz> response = restTemplate.getForEntity(baseURLRest2 + "/get/" + quizSubmission.getPkQuiz(), Quiz.class);
+        Quiz quiz = response.getBody();
+
+        int points = 0;
+
+        // Parcourir chaque question dans quizSubmission
+        for (Question submittedQuestion : quizSubmission.getQuestions()) {
+            // Trouver la question correspondante dans le quiz
+            Question quizQuestion = quiz.getQuestions().stream()
+                .filter(q -> q.getPkQuestion().equals(submittedQuestion.getPkQuestion()))
+                .findFirst()
+                .orElse(null);
+
+            // Si la question n'existe pas dans le quiz, la passer
+            if (quizQuestion == null) {
+                continue;
+            }
+
+            // Parcourir chaque réponse dans submittedQuestion
+            for (Reponse submittedResponse : submittedQuestion.getReponses()) {
+                // Trouver la réponse correspondante dans quizQuestion
+                Reponse quizResponse = quizQuestion.getReponses().stream()
+                    .filter(r -> r.getPkReponse().equals(submittedResponse.getPkReponse()))
+                    .findFirst()
+                    .orElse(null);
+
+                // Si la réponse n'existe pas dans quizQuestion, la passer
+                if (quizResponse == null) {
+                    continue;
+                }
+
+                // Si la réponse soumise est correcte, incrémenter les points
+                if (submittedResponse.isCorrect() && quizResponse.isCorrect()) {
+                    points++;
+                }
+            }
+        }
+
+        // Ajoute les points
+        
+
+        // Retourner le total des points
+        return ResponseEntity.ok(points);
+    }
+
+    @GetMapping(path = "/points")
+    public ResponseEntity<?> points(@RequestParam String username) {
+        
     }
 
     public void refreshLike(Quiz quiz) {

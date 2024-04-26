@@ -1,6 +1,8 @@
 package ch.richozm.youquizplay.ctrl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +25,7 @@ public class UserCtrl {
     }
 
     @PostMapping(path = "/login")
-    public ResponseEntity<User> checkLogin(@RequestParam String username, @RequestParam String password) {
+    public ResponseEntity<?> checkLogin(@RequestParam String username, @RequestParam String password) {
         User user = userService.checkLogin(username, password);
         if (user != null) {
             return new ResponseEntity<>(user, HttpStatus.OK);
@@ -33,7 +35,7 @@ public class UserCtrl {
     }
 
     @PostMapping(path = "/add")
-    public ResponseEntity<User> addUser(@RequestParam String username, @RequestParam String password) {
+    public ResponseEntity<?> addUser(@RequestParam String username, @RequestParam String password) {
         User user = userService.addUser(username, password);
         if (user != null) {
             return new ResponseEntity<>(user, HttpStatus.OK);

@@ -1,5 +1,7 @@
 package ch.richozm.youquizplay.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,17 +42,50 @@ public class UserQuizService {
     }
 
     @Transactional
-    public String contabilisePoints(Integer userId, Integer quizId, Integer points) {
+    public Boolean contabilisePoints(Integer userId, Integer quizId, Integer points) {
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
-            return "pk invalide !";
+            return false;
         }
+
         UserQuiz userQuiz = userQuizRepository.findByfkUserAndQuizId(user, quizId);
-        if (userQuiz != null) {
+        if (userQuiz == null) {
+            userQuiz = new UserQuiz();
+            userQuiz.setUser(user);
+            userQuiz.setQuiz(quizId);
+            userQuiz.setLike(false);
             userQuiz.setPoints(points);
         }
-        return "Points ajoutés avec succès";
+        userQuiz.setPoints(points);
+        userQuizRepository.save(userQuiz);
+
+        return true;
     }
+
+    @Transactional
+    public Integer getPoints(Integer userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            return -1;
+        }
+
+        // Récupérer tous les UserQuiz pour l'utilisateur donné
+        List<UserQuiz> userQuizzes = userQuizRepository.findAllByfkUser(user);
+
+        // Si l'utilisateur n'a pas de UserQuiz, retourner 0
+        if (userQuizzes.isEmpty()) {
+            return 0;
+        }
+
+        // Calculer la somme des points pour tous les UserQuiz de l'utilisateur
+        int totalPoints = userQuizzes.stream()
+            .mapToInt(UserQuiz::getPoints)
+            .sum();
+
+        // Retourner le total des points
+        return totalPoints;
+    }
+    
 
     @Transactional
     public Integer getNbrLikes(Integer quizId) {

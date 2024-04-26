@@ -22,7 +22,7 @@ public class UserService {
 
     @Transactional
     public User addUser(String username, String password) {
-        User user = userRepository.findByUsername(username).orElse(null);
+        User user = userRepository.findByUsername(username);
         if (user != null) { // Si ce nom d'utilisateur existe déja
             return null;
         }
@@ -39,7 +39,7 @@ public class UserService {
     @Transactional
     public User checkLogin(String username, String password) {
         String hashedPassword = passwordEncoder.encode(password);
-        User user = userRepository.findByUsername(username).orElse(null);
+        User user = userRepository.findByUsername(username);
 
         if (user != null) {
             if (user.getPassword().equals(hashedPassword)) {

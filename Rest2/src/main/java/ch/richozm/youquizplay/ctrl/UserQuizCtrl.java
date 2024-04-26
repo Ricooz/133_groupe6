@@ -1,6 +1,8 @@
 package ch.richozm.youquizplay.ctrl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -30,13 +32,23 @@ public class UserQuizCtrl {
     }
 
     @GetMapping("/points/get")
-    public @ResponseBody String getPoints(@RequestParam String username) {
-        return userQuizService.getPoints(username);
+    public ResponseEntity<String> getPoints(@RequestParam Integer userId) {
+        Integer points = userQuizService.getPoints(userId);
+        if (points != -1) {
+            return new ResponseEntity<>(String.valueOf(points), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Utilisateur non trouvé. Id de l'utilisateur fournie invalide.", HttpStatus.NOT_FOUND);
+        }
     }
 
-    @PostMapping("/points/add")
-    public @ResponseBody String addPoints(@RequestParam String username, @RequestParam Integer quizId, @RequestParam Integer points) {
-        return userQuizService.contabilisePoints(userId, quizId, points);
+    @PostMapping("/points/set")
+    public ResponseEntity<String> addPoints(@RequestParam Integer userId, @RequestParam Integer quizId, @RequestParam Integer points) {
+        Boolean userExist = userQuizService.contabilisePoints(userId, quizId, points);
+        if (userExist) {
+            return new ResponseEntity<>("Points attribué avec succès", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Utilisateur non trouvé. Id de l'utilisateur fournie invalide.", HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/likes/{quizId}")
