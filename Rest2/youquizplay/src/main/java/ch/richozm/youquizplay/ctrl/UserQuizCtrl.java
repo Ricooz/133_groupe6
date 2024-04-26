@@ -5,7 +5,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import ch.richozm.youquizplay.service.UserQuizService;
+
+import ch.richozm.youquizplay.services.UserQuizService;
+
 import org.springframework.web.bind.annotation.PostMapping;
 
 
@@ -21,8 +23,8 @@ public class UserQuizCtrl {
     }
 
     @PostMapping("/like")
-    public void likeQuiz(@RequestParam Integer userId, @RequestParam Integer quizId) {
-        userQuizService.likeQuiz(userId, quizId);
+    public @ResponseBody String likeQuiz(@RequestParam Integer userId, @RequestParam Integer quizId) {
+        return userQuizService.likeQuiz(userId, quizId);
     }
 
     @PostMapping("/points")

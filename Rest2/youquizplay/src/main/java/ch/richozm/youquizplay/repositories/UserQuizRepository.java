@@ -1,4 +1,4 @@
-package ch.richozm.youquizplay.repository;
+package ch.richozm.youquizplay.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,11 +1,11 @@
-package ch.richozm.youquizplay.service;
+package ch.richozm.youquizplay.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import ch.richozm.youquizplay.model.User;
-import ch.richozm.youquizplay.repository.UserRepository;
+import ch.richozm.youquizplay.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 
 @Service
