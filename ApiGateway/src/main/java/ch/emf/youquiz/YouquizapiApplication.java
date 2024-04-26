@@ -1,4 +1,4 @@
-package ch.emf.youquiz.youquizapi;
+package ch.emf.youquiz;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
