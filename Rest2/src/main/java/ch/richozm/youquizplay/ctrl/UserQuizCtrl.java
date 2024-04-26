@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ch.richozm.youquizplay.services.UserQuizService;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 
@@ -33,8 +34,8 @@ public class UserQuizCtrl {
         return userQuizService.contabilisePoints(userId, quizId, points);
     }
 
-    @GetMapping("/likes")
-    public @ResponseBody Integer getNbrLike(@RequestParam Integer quizId) {
+    @GetMapping("/likes/{quizId}")
+    public @ResponseBody Integer getNbrLike(@PathVariable("quizId") Integer quizId) {
         return userQuizService.getNbrLikes(quizId);
     }
 }
