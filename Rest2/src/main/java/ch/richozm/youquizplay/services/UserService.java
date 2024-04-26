@@ -18,10 +18,10 @@ public class UserService {
     }
 
     @Transactional
-    public String addUser(String username, String password) {
+    public Boolean addUser(String username, String password) {
         User existingUser = userRepository.findByUsername(username);
         if (existingUser != null) {
-            return "Un utilisateur avec ce nom d'utilisateur existe déjà.";
+            return false;
         }
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -32,7 +32,7 @@ public class UserService {
         user.setUsername(username);
         user.setPassword(hashedPassword);
         userRepository.save(user);
-        return "User " + username + " sauvegardé avec succès !";
+        return true;
     }
 
     @Transactional
