@@ -91,4 +91,20 @@ public class UserController {
             return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         }
     }
+
+    @GetMapping("/points")
+    public ResponseEntity<String> getPoints(HttpSession session) {
+        // Vérifie si l'utilisateur est connecté
+        User user = (User) session.getAttribute("user");
+        String username = user.getUsername();
+        if (username != null) {
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("userId", String.valueOf(user.getPKUser()));
+
+            ResponseEntity<String> response = restTemplate.getForEntity(baseURLRest2 + "/userquiz/points/getAll", String.class, params);
+            return ResponseEntity.ok(response.getBody());
+        } else {
+            return new ResponseEntity<>("Connexion nécessaire pour avoir les points d'un utilisateur.", HttpStatus.FORBIDDEN);
+        }
+    }
 }

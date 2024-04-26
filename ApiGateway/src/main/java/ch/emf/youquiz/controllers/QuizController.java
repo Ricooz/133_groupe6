@@ -154,12 +154,15 @@ public class QuizController {
     }
 
     @PostMapping(path = "/like")
-    public ResponseEntity<String> like(HttpSession session, @RequestParam String nom, @RequestParam String description) {
+    public ResponseEntity<String> like(HttpSession session, @RequestParam Integer pkQuiz) {
         // Vérifie si l'utilisateur est connecté
         User user = (User) session.getAttribute("username");
         String username = user.getUsername();
         if (username != null) {
-            ResponseEntity<String> response = restTemplate.getForEntity(baseURLRest2 + "/userquiz/like", String.class);
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("quizId", String.valueOf(pkQuiz));
+
+            ResponseEntity<String> response = restTemplate.getForEntity(baseURLRest2 + "/userquiz/like", String.class, params);
             return ResponseEntity.ok(response.getBody());
         } else {
             return new ResponseEntity<>("Connexion nécessaire pour le like d'un quiz.", HttpStatus.FORBIDDEN);
@@ -215,7 +218,7 @@ public class QuizController {
 
             // Ajoute les points
             Map<String, String> params = new HashMap<String, String>();
-            params.put("userId", String.valueOf(points));
+            params.put("userId", String.valueOf(user.getPKUser()));
             params.put("quizId", String.valueOf(quiz.getPkQuiz()));
             params.put("points", String.valueOf(points));
             restTemplate.getForEntity(baseURLRest2 + "/userquiz/points/set", Quiz.class);
@@ -228,15 +231,19 @@ public class QuizController {
     }
 
     @GetMapping(path = "/points")
-    public ResponseEntity<?> points(HttpSession session, ) {
+    public ResponseEntity<?> points(HttpSession session, @RequestParam Integer quizId) {
         // Vérifie si l'utilisateur est connecté
         User user = (User) session.getAttribute("username");
         String username = user.getUsername();
         if (username != null) {
-            ResponseEntity<String> response = restTemplate.getForEntity(baseURLRest2 + "/userquiz/like", String.class);
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("userId", String.valueOf(user.getPKUser()));
+            params.put("quizId", String.valueOf(quizId));
+
+            ResponseEntity<String> response = restTemplate.getForEntity(baseURLRest2 + "/userquiz/points/get", String.class, params);
             return ResponseEntity.ok(response.getBody());
         } else {
-            return new ResponseEntity<>("Connexion nécessaire pour le like d'un quiz.", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("Connexion nécessaire pour avoir les points d'un quiz.", HttpStatus.FORBIDDEN);
         }
     }
 
