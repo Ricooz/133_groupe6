@@ -13,7 +13,7 @@ public class Quiz {
 
     // Constructors
     public Quiz() {
-        
+
     }
 
     public Quiz(Integer pkQuiz, String nom, String description, String username, List<Question> questions) {
