@@ -63,9 +63,7 @@ public class QuizController {
             refreshLike(quiz);
             return ResponseEntity.ok(quiz);
         } else {
-            return ResponseEntity
-                    .status(response.getStatusCode())
-                    .body(response.getBody());
+            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         }
     }
 
@@ -100,7 +98,7 @@ public class QuizController {
     }
 
     @PutMapping(value = "/update")
-    public ResponseEntity<?> update(HttpSession session, @RequestParam Integer pkQuiz, String nom, @RequestParam String description) {
+    public ResponseEntity<?> update(HttpSession session, @RequestParam Integer pkQuiz, @RequestParam String nom, @RequestParam String description) {
         // Vérifie si l'utilisateur est connecté
         String username = (String) session.getAttribute("username");
         if (username != null) {
@@ -140,12 +138,10 @@ public class QuizController {
             if (response.getStatusCode().is2xxSuccessful()) {
                 return ResponseEntity.ok(response.getBody());
             } else {
-                return ResponseEntity
-                        .status(response.getStatusCode())
-                        .body(response.getBody());
+                return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
             }
         } else {
-            return new ResponseEntity<>("Connexion nécessaire pour l'ajout d'un quiz.", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("Connexion nécessaire pour la suppression d'un quiz.", HttpStatus.FORBIDDEN);
         }
     }
 

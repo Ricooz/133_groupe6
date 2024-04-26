@@ -21,34 +21,35 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import ch.emf.youquiz.beans.Question;
+import ch.emf.youquiz.beans.Reponse;
 import jakarta.servlet.http.HttpSession;
 
 @RestController
-@RequestMapping("/question")
-public class QuestionController {
+@RequestMapping("/reponse")
+public class ReponseController {
 
     private final Environment env;
     private final RestTemplate restTemplate;
     private final String baseURLRest1;
 
     @Autowired
-    public QuestionController(Environment env, RestTemplate restTemplate) {
+    public ReponseController(Environment env, RestTemplate restTemplate) {
         this.env = env;
         this.restTemplate = restTemplate;
-        this.baseURLRest1 = env.getProperty("rest1.url") + "/question";
+        this.baseURLRest1 = env.getProperty("rest1.url") + "/reponse";
     }
 
     @GetMapping("")
-    public ResponseEntity<Iterable<Question>> getAll() {
-        ResponseEntity<Question[]> response = restTemplate.getForEntity(baseURLRest1, Question[].class);
-        List<Question> questionList = new ArrayList<>(Arrays.asList(response.getBody()));
+    public ResponseEntity<Iterable<Reponse>> getAll() {
+        ResponseEntity<Reponse[]> response = restTemplate.getForEntity(baseURLRest1, Reponse[].class);
+        List<Reponse> reponseList = new ArrayList<>(Arrays.asList(response.getBody()));
 
-        return ResponseEntity.ok(questionList);
+        return ResponseEntity.ok(reponseList);
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<?> get(@PathVariable("id") Integer pkQuestion) {
-        ResponseEntity<Question> response = restTemplate.getForEntity(baseURLRest1 + "/get/" + pkQuestion, Question.class);
+    public ResponseEntity<?> get(@PathVariable("id") Integer pkReponse) {
+        ResponseEntity<Reponse> response = restTemplate.getForEntity(baseURLRest1 + "/get/" + pkReponse, Reponse.class);
 
         // Vérifie si la requête est réussie
         if (response.getStatusCode().is2xxSuccessful()) {
@@ -59,16 +60,17 @@ public class QuestionController {
     }
 
     @PostMapping(path = "/add")
-    public ResponseEntity<?> add(HttpSession session, @RequestParam String nom, @RequestParam Integer pkQuiz) {
+    public ResponseEntity<?> add(HttpSession session, @RequestParam String nom, @RequestParam Boolean correct, @RequestParam Integer pkQuestion) {
         // Vérifie si l'utilisateur est connecté
         String username = (String) session.getAttribute("username");
         if (username != null) {
             Map<String, String> params = new HashMap<String, String>();
             params.put("nom", nom);
-            params.put("pkQuiz", String.valueOf(pkQuiz));
+            params.put("correct", String.valueOf(correct));
+            params.put("pkQuestion", String.valueOf(pkQuestion));
             params.put("username", username);
 
-            ResponseEntity<Question> response = restTemplate.getForEntity(baseURLRest1 + "/add", Question.class);
+            ResponseEntity<Reponse> response = restTemplate.getForEntity(baseURLRest1 + "/add", Reponse.class);
 
             // Vérifie si la requête est réussie
             if (response.getStatusCode().is2xxSuccessful()) {
@@ -77,12 +79,12 @@ public class QuestionController {
                 return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
             }
         } else {
-            return new ResponseEntity<>("Connexion nécessaire pour l'ajout d'une question.", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("Connexion nécessaire pour l'ajout d'une reponse.", HttpStatus.FORBIDDEN);
         }
     }
 
     @PutMapping(value = "/update")
-    public ResponseEntity<?> update(HttpSession session, @RequestParam Integer pkQuestion,  String nom) {
+    public ResponseEntity<?> update(HttpSession session, @RequestParam Integer pkReponse,  String nom) {
         // Vérifie si l'utilisateur est connecté
         String username = (String) session.getAttribute("username");
         if (username != null) {

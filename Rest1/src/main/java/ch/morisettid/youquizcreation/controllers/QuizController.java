@@ -54,7 +54,7 @@ public class QuizController {
     }
 
     @PutMapping(value = "/update")
-    public ResponseEntity<?> update(@RequestParam Integer pkQuiz,  String nom, @RequestParam String description, @RequestParam String username) {
+    public ResponseEntity<?> update(@RequestParam Integer pkQuiz, @RequestParam String nom, @RequestParam String description, @RequestParam String username) {
         try {
             return new ResponseEntity<>(quizService.updateQuiz(pkQuiz, nom, description, username), HttpStatus.OK);
         } catch (IdNotFoundException e) {

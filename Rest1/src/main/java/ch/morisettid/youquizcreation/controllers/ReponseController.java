@@ -55,7 +55,7 @@ public class ReponseController {
     }
 
     @PutMapping(value = "/update")
-    public ResponseEntity<?> update(@RequestParam Integer pkReponse,  String nom, Boolean correct, @RequestParam String username) {
+    public ResponseEntity<?> update(@RequestParam Integer pkReponse, @RequestParam String nom, Boolean correct, @RequestParam String username) {
         try {
             return new ResponseEntity<>(reponseService.updateReponse(pkReponse, nom, correct, username), HttpStatus.OK);
         } catch (IdNotFoundException e) {
