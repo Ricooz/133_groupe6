@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import ch.emf.youquiz.beans.Quiz;
+import ch.emf.youquiz.beans.User;
 import jakarta.servlet.http.HttpSession;
 
 @RestController
@@ -82,7 +83,8 @@ public class QuizController {
     @PostMapping(path = "/add")
     public ResponseEntity<?> add(HttpSession session, @RequestParam String nom, @RequestParam String description) {
         // Vérifie si l'utilisateur est connecté
-        String username = (String) session.getAttribute("username");
+        User user = (User) session.getAttribute("username");
+        String username = user.getUsername();
         if (username != null) {
             Map<String, String> params = new HashMap<String, String>();
             params.put("nom", nom);
@@ -100,7 +102,8 @@ public class QuizController {
     @PutMapping(value = "/update")
     public ResponseEntity<?> update(HttpSession session, @RequestParam Integer pkQuiz, @RequestParam String nom, @RequestParam String description) {
         // Vérifie si l'utilisateur est connecté
-        String username = (String) session.getAttribute("username");
+        User user = (User) session.getAttribute("username");
+        String username = user.getUsername();
         if (username != null) {
             Map<String, String> params = new HashMap<String, String>();
             params.put("pkQuiz", String.valueOf(pkQuiz));
@@ -126,7 +129,8 @@ public class QuizController {
     @DeleteMapping(value = "/delete")
     public ResponseEntity<String> delete(HttpSession session, @RequestParam Integer pkQuiz) {
         // Vérifie si l'utilisateur est connecté
-        String username = (String) session.getAttribute("username");
+        User user = (User) session.getAttribute("username");
+        String username = user.getUsername();
         if (username != null) {
             Map<String, String> params = new HashMap<String, String>();
             params.put("pkQuiz", String.valueOf(pkQuiz));
@@ -143,6 +147,16 @@ public class QuizController {
         } else {
             return new ResponseEntity<>("Connexion nécessaire pour la suppression d'un quiz.", HttpStatus.FORBIDDEN);
         }
+    }
+
+    @PostMapping(path = "/like")
+    public ResponseEntity<?> add(@RequestParam String nom, @RequestParam String description, @RequestParam String username) {
+        return new ResponseEntity<>(quizService.addQuiz(nom, description, username), HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/submit")
+    public ResponseEntity<?> add(@RequestParam String nom, @RequestParam String description, @RequestParam String username) {
+        return new ResponseEntity<>(quizService.addQuiz(nom, description, username), HttpStatus.OK);
     }
 
     public void refreshLike(Quiz quiz) {

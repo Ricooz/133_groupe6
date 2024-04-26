@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import ch.emf.youquiz.beans.Question;
+import ch.emf.youquiz.beans.User;
 import jakarta.servlet.http.HttpSession;
 
 @RestController
@@ -61,7 +62,8 @@ public class QuestionController {
     @PostMapping(path = "/add")
     public ResponseEntity<?> add(HttpSession session, @RequestParam String nom, @RequestParam Integer pkQuiz) {
         // Vérifie si l'utilisateur est connecté
-        String username = (String) session.getAttribute("username");
+        User user = (User) session.getAttribute("username");
+        String username = user.getUsername();
         if (username != null) {
             Map<String, String> params = new HashMap<String, String>();
             params.put("nom", nom);
@@ -84,7 +86,8 @@ public class QuestionController {
     @PutMapping(value = "/update")
     public ResponseEntity<?> update(HttpSession session, @RequestParam Integer pkQuestion,  String nom) {
         // Vérifie si l'utilisateur est connecté
-        String username = (String) session.getAttribute("username");
+        User user = (User) session.getAttribute("username");
+        String username = user.getUsername();
         if (username != null) {
             Map<String, String> params = new HashMap<String, String>();
             params.put("pkQuestion", String.valueOf(pkQuestion));
@@ -107,7 +110,8 @@ public class QuestionController {
     @DeleteMapping(value = "/delete")
     public ResponseEntity<String> delete(HttpSession session, @RequestParam Integer pkQuestion) {
         // Vérifie si l'utilisateur est connecté
-        String username = (String) session.getAttribute("username");
+        User user = (User) session.getAttribute("username");
+        String username = user.getUsername();
         if (username != null) {
             Map<String, String> params = new HashMap<String, String>();
             params.put("pkQuestion", String.valueOf(pkQuestion));

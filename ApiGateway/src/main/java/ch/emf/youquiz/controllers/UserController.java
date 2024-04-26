@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import ch.emf.youquiz.beans.Quiz;
+import ch.emf.youquiz.beans.User;
 import jakarta.servlet.http.HttpSession;
 
 @RestController
@@ -35,9 +37,9 @@ public class UserController {
     @GetMapping("")
     public ResponseEntity<?> isConnected(HttpSession session) {
         // Vérifie si l'utilisateur est connecté
-        String username = (String) session.getAttribute("username");
-        if (username != null) {
-            return ResponseEntity.ok(Collections.singletonMap("username", username));
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            return ResponseEntity.ok(Collections.singletonMap("username", user.getUsername()));
         } else {
             return ResponseEntity.ok("Aucun utilisateur n'est connecté.");
         }
@@ -49,25 +51,26 @@ public class UserController {
         params.put("username", username);
         params.put("password", password);
 
-        ResponseEntity<Boolean> response = restTemplate.getForEntity(baseURLRest2 + "/user/login", Boolean.class, params);
+        ResponseEntity<User> response = restTemplate.getForEntity(baseURLRest2 + "/user/login", User.class, params);
 
         // Vérifie si la requête est réussie
-        if (response.getBody()) {
-            session.setAttribute("user", username);
-            return ResponseEntity.ok(Collections.singletonMap("username", username));
+        User user = response.getBody();
+        if (response.getStatusCode().is2xxSuccessful()) {
+            session.setAttribute("user", user);
+            return ResponseEntity.ok(Collections.singletonMap("username", user.getUsername()));
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("error", "Nom d'utilisateur ou mot passe invalide."));
+            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         }
     }
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpSession session) {
         // Vérifie si l'utilisateur est connecté
-        if (session.getAttribute("username") != null) {
+        if (session.getAttribute("user") != null) {
             session.invalidate();
             return ResponseEntity.ok("Déconnexion réussie.");
         } else {
-            return ResponseEntity.ok("Aucun utilisateur n'est connecté");
+            return ResponseEntity.ok("Aucun utilisateur n'est connecté.");
         }
     }
 
@@ -77,14 +80,15 @@ public class UserController {
         params.put("username", username);
         params.put("password", password);
 
-        ResponseEntity<Boolean> response = restTemplate.getForEntity(baseURLRest2 + "/user/add", Boolean.class, params);
+        ResponseEntity<User> response = restTemplate.getForEntity(baseURLRest2 + "/user/add", User.class, params);
         
         // Vérifie si la requête est réussie
-        if (response.getBody()) {
-            session.setAttribute("user", username);
-            return ResponseEntity.ok(Collections.singletonMap("username", username));
+        User user = response.getBody();
+        if (response.getStatusCode().is2xxSuccessful()) {
+            session.setAttribute("user", user);
+            return ResponseEntity.ok(Collections.singletonMap("username", user.getUsername()));
         } else {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap("error", "Nom d'utilisateur déja utilisé."));
+            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         }
     }
 }

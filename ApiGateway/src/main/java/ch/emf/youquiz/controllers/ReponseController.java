@@ -22,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 
 import ch.emf.youquiz.beans.Question;
 import ch.emf.youquiz.beans.Reponse;
+import ch.emf.youquiz.beans.User;
 import jakarta.servlet.http.HttpSession;
 
 @RestController
@@ -62,7 +63,8 @@ public class ReponseController {
     @PostMapping(path = "/add")
     public ResponseEntity<?> add(HttpSession session, @RequestParam String nom, @RequestParam Boolean correct, @RequestParam Integer pkQuestion) {
         // Vérifie si l'utilisateur est connecté
-        String username = (String) session.getAttribute("username");
+        User user = (User) session.getAttribute("username");
+        String username = user.getUsername();
         if (username != null) {
             Map<String, String> params = new HashMap<String, String>();
             params.put("nom", nom);
@@ -84,16 +86,18 @@ public class ReponseController {
     }
 
     @PutMapping(value = "/update")
-    public ResponseEntity<?> update(HttpSession session, @RequestParam Integer pkReponse,  String nom) {
+    public ResponseEntity<?> update(HttpSession session, @RequestParam Integer pkReponse, @RequestParam String nom, @RequestParam Boolean correct) {
         // Vérifie si l'utilisateur est connecté
-        String username = (String) session.getAttribute("username");
+        User user = (User) session.getAttribute("username");
+        String username = user.getUsername();
         if (username != null) {
             Map<String, String> params = new HashMap<String, String>();
-            params.put("pkQuestion", String.valueOf(pkQuestion));
+            params.put("pkReponse", String.valueOf(pkReponse));
             params.put("nom", nom);
+            params.put("correct", String.valueOf(correct));
             params.put("username", username);
 
-            ResponseEntity<Question> response = restTemplate.getForEntity(baseURLRest1 + "/update", Question.class);
+            ResponseEntity<Reponse> response = restTemplate.getForEntity(baseURLRest1 + "/update", Reponse.class);
 
             // Vérifie si la requête est réussie
             if (response.getStatusCode().is2xxSuccessful()) {
@@ -102,17 +106,18 @@ public class ReponseController {
                 return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
             }
         } else {
-            return new ResponseEntity<>("Connexion nécessaire pour la modifcation d'une question.", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("Connexion nécessaire pour la modifcation d'une reponse.", HttpStatus.FORBIDDEN);
         }
     }
 
     @DeleteMapping(value = "/delete")
-    public ResponseEntity<String> delete(HttpSession session, @RequestParam Integer pkQuestion) {
+    public ResponseEntity<String> delete(HttpSession session, @RequestParam Integer pkReponse) {
         // Vérifie si l'utilisateur est connecté
-        String username = (String) session.getAttribute("username");
+        User user = (User) session.getAttribute("username");
+        String username = user.getUsername();
         if (username != null) {
             Map<String, String> params = new HashMap<String, String>();
-            params.put("pkQuestion", String.valueOf(pkQuestion));
+            params.put("pkReponse", String.valueOf(pkReponse));
             params.put("username", username);
 
             ResponseEntity<String> response = restTemplate.getForEntity(baseURLRest1 + "/delete", String.class);
@@ -124,7 +129,7 @@ public class ReponseController {
                 return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
             }
         } else {
-            return new ResponseEntity<>("Connexion nécessaire pour la suppression d'une question.", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("Connexion nécessaire pour la suppression d'une reponse.", HttpStatus.FORBIDDEN);
         }
     }
 }

@@ -29,8 +29,13 @@ public class UserQuizCtrl {
         return userQuizService.likeQuiz(userId, quizId);
     }
 
-    @PostMapping("/points")
-    public @ResponseBody String contabilisePoints(Integer userId, Integer quizId, Integer points) {
+    @GetMapping("/points/get")
+    public @ResponseBody String getPoints(@RequestParam String username) {
+        return userQuizService.getPoints(username);
+    }
+
+    @PostMapping("/points/add")
+    public @ResponseBody String addPoints(@RequestParam String username, @RequestParam Integer quizId, @RequestParam Integer points) {
         return userQuizService.contabilisePoints(userId, quizId, points);
     }
 
