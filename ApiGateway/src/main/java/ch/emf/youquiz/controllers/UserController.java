@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import ch.emf.youquiz.beans.Quiz;
 import ch.emf.youquiz.beans.User;
 import jakarta.servlet.http.HttpSession;
 
