@@ -6,8 +6,13 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import ch.emf.youquiz.beans.Quiz;
 import ch.emf.youquiz.beans.User;
 import jakarta.servlet.http.HttpSession;
 
@@ -50,7 +56,10 @@ public class UserController {
         params.put("username", username);
         params.put("password", password);
 
-        ResponseEntity<User> response = restTemplate.getForEntity(baseURLRest2 + "/user/login", User.class, params);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(params, headers);
+        ResponseEntity<User> response = restTemplate.postForEntity(baseURLRest2 + "/user/login", requestEntity, User.class);
 
         // Vérifie si la requête est réussie
         User user = response.getBody();
@@ -75,11 +84,14 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(HttpSession session, @RequestParam String username, @RequestParam String password) {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("username", username);
-        params.put("password", password);
+        LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("username", username);
+        params.add("password", password);
 
-        ResponseEntity<User> response = restTemplate.getForEntity(baseURLRest2 + "/user/add", User.class, params);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
+        ResponseEntity<User> response = restTemplate.postForEntity(baseURLRest2 + "/user/add", requestEntity, User.class);
         
         // Vérifie si la requête est réussie
         User user = response.getBody();

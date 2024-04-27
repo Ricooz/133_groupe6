@@ -11,7 +11,6 @@ import ch.richozm.youquizplay.model.User;
 import ch.richozm.youquizplay.services.UserService;
 
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @RestController
 @RequestMapping("/user")
