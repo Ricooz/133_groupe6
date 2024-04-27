@@ -73,7 +73,11 @@ public class UserQuizService {
         UserQuiz userQuiz = userQuizRepository.findByfkUserAndQuizId(user, quizId);
 
         // Retourner les points
-        return userQuiz.getPoints();
+        if (userQuiz != null) {
+            return userQuiz.getPoints();
+        } else {
+            return 0;
+        }
     }
 
     @Transactional

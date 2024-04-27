@@ -26,8 +26,8 @@ public class UserQuizCtrl {
         this.userQuizService = userQuizService;
     }
 
-    @PostMapping("/like")
-    public @ResponseBody String likeQuiz(@RequestParam Integer userId, @RequestParam Integer quizId) {
+    @PostMapping("/like/{id}")
+    public @ResponseBody String likeQuiz(@RequestParam Integer userId, @PathVariable("id") Integer quizId) {
         return userQuizService.likeQuiz(userId, quizId);
     }
 

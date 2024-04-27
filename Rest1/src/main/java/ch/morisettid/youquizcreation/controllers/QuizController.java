@@ -43,9 +43,9 @@ public class QuizController {
         }
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<Iterable<QuizDTO>> getUserQuizzes(@PathVariable("userId") Integer pkUser) {
-        return new ResponseEntity<>(quizService.findUserQuizzes(pkUser), HttpStatus.OK);
+    @GetMapping("/user/{username}")
+    public ResponseEntity<Iterable<QuizDTO>> getUserQuizzes(@PathVariable("username") String username) {
+        return new ResponseEntity<>(quizService.findUserQuizzes(username), HttpStatus.OK);
     }
 
     @PostMapping(path = "/add")

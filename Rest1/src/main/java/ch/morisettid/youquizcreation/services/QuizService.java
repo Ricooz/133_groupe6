@@ -45,8 +45,8 @@ public class QuizService {
         return quizDTOs;
     }
 
-    public Iterable<QuizDTO> findUserQuizzes(Integer pkUser) {
-        Iterable<Quiz> quizzes = quizRepository.findAll();
+    public Iterable<QuizDTO> findUserQuizzes(String username) {
+        Iterable<Quiz> quizzes = quizRepository.findAllByUsername(username);
         List<QuizDTO> quizDTOs = new ArrayList<>();
 
         for (Quiz quiz : quizzes) {

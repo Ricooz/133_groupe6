@@ -21,7 +21,7 @@ public class UserQuiz {
     @Column(name = "quiz_like")
     private Boolean like;
 
-    @Column(name = "nbr_points")
+    @Column(name = "nbr_points", columnDefinition = "integer default 0")
     private Integer points;
 
     @Column(name = "quizId")

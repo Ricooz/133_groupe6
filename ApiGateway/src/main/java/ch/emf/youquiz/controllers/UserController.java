@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import ch.emf.youquiz.beans.Quiz;
 import ch.emf.youquiz.beans.User;
@@ -52,22 +54,23 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(HttpSession session, @RequestParam String username, @RequestParam String password) {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("username", username);
-        params.put("password", password);
+        LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("username", username);
+        params.add("password", password);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(params, headers);
-        ResponseEntity<User> response = restTemplate.postForEntity(baseURLRest2 + "/user/login", requestEntity, User.class);
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
+        
+        try {
+            ResponseEntity<User> response = restTemplate.postForEntity(baseURLRest2 + "/user/login", requestEntity, User.class);
+            User user = response.getBody();
 
-        // Vérifie si la requête est réussie
-        User user = response.getBody();
-        if (response.getStatusCode().is2xxSuccessful()) {
             session.setAttribute("user", user);
             return ResponseEntity.ok(Collections.singletonMap("username", user.getUsername()));
-        } else {
-            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+        } catch (HttpClientErrorException e) {
+            System.err.println(e.getResponseBodyAsString());
+            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
         }
     }
 
@@ -91,29 +94,32 @@ public class UserController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
-        ResponseEntity<User> response = restTemplate.postForEntity(baseURLRest2 + "/user/add", requestEntity, User.class);
-        
-        // Vérifie si la requête est réussie
-        User user = response.getBody();
-        if (response.getStatusCode().is2xxSuccessful()) {
+
+        try {
+            ResponseEntity<User> response = restTemplate.postForEntity(baseURLRest2 + "/user/add", requestEntity, User.class);
+            User user = response.getBody();
+
             session.setAttribute("user", user);
             return ResponseEntity.ok(Collections.singletonMap("username", user.getUsername()));
-        } else {
-            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
         }
     }
 
     @GetMapping("/points")
     public ResponseEntity<String> getPoints(HttpSession session) {
-        // Vérifie si l'utilisateur est connecté
-        User user = (User) session.getAttribute("user");
-        String username = user.getUsername();
-        if (username != null) {
-            Map<String, String> params = new HashMap<String, String>();
-            params.put("userId", String.valueOf(user.getPKUser()));
+       // Vérifie si l'utilisateur est connecté
+       User user = (User) session.getAttribute("user");
+       if (user != null) {
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseURLRest2 + "/userquiz/points/getAll")
+                .queryParam("userId", user.getPKUser());
 
-            ResponseEntity<String> response = restTemplate.getForEntity(baseURLRest2 + "/userquiz/points/getAll", String.class, params);
-            return ResponseEntity.ok(response.getBody());
+            try {
+                ResponseEntity<String> response = restTemplate.getForEntity(builder.toUriString(), String.class);
+                return ResponseEntity.ok(response.getBody());
+            } catch (HttpClientErrorException e) {
+                return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+            }
         } else {
             return new ResponseEntity<>("Connexion nécessaire pour avoir les points d'un utilisateur.", HttpStatus.FORBIDDEN);
         }

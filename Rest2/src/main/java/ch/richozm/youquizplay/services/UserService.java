@@ -38,11 +38,9 @@ public class UserService {
 
     @Transactional
     public User checkLogin(String username, String password) {
-        String hashedPassword = passwordEncoder.encode(password);
         User user = userRepository.findByUsername(username);
-
         if (user != null) {
-            if (user.getPassword().equals(hashedPassword)) {
+            if (passwordEncoder.matches(password, user.getPassword())) {
                 return user;
             } else {
                 user = null;

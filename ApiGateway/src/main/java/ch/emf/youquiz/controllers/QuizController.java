@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -66,22 +67,18 @@ public class QuizController {
     }
 
     @GetMapping("/get/{quizId}")
-    public ResponseEntity<Quiz> get(@PathVariable("quizId") Integer pkQuiz) {
-        ResponseEntity<Quiz> response = restTemplate.getForEntity(baseURLRest1 + "/get/" + pkQuiz, Quiz.class);
-
-        // Vérifie si la requête est réussie
-        if (response.getStatusCode().is2xxSuccessful()) {
-            Quiz quiz = response.getBody();
-            refreshLike(quiz);
-            return ResponseEntity.ok(quiz);
-        } else {
-            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+    public ResponseEntity<?> get(@PathVariable("quizId") Integer pkQuiz) {
+        try {
+            ResponseEntity<Quiz> response = restTemplate.getForEntity(baseURLRest1 + "/get/" + pkQuiz, Quiz.class);
+            return ResponseEntity.ok(response.getBody());
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
         }
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<Iterable<Quiz>> getUserQuizzes(@PathVariable("userId") Integer pkUser) {
-        ResponseEntity<Quiz[]> response = restTemplate.getForEntity(baseURLRest1 + "/user/" + pkUser, Quiz[].class);
+    @GetMapping("/user/{username}")
+    public ResponseEntity<Iterable<Quiz>> getUserQuizzes(@PathVariable("username") String username) {
+        ResponseEntity<Quiz[]> response = restTemplate.getForEntity(baseURLRest1 + "/user/" + username, Quiz[].class);
         List<Quiz> quizList = new ArrayList<>(Arrays.asList(response.getBody()));
 
         for (Quiz quiz : quizList) {
@@ -129,16 +126,16 @@ public class QuizController {
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-            HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(params, headers);
-            ResponseEntity<Quiz> response = restTemplate.exchange(baseURLRest1 + "/update", HttpMethod.PUT, requestEntity, Quiz.class);
+            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
 
-            // Vérifie si la requête est réussie
-            if (response.getStatusCode().is2xxSuccessful()) {
+            try {
+                ResponseEntity<Quiz> response = restTemplate.exchange(baseURLRest1 + "/update", HttpMethod.PUT, requestEntity, Quiz.class);
                 Quiz quiz = response.getBody();
                 refreshLike(quiz);
+
                 return ResponseEntity.ok(quiz);
-            } else {
-                return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+            } catch (HttpClientErrorException e) {
+                return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
             }
         } else {
             return new ResponseEntity<>("Connexion nécessaire pour la modifcation d'un quiz.", HttpStatus.FORBIDDEN);
@@ -156,29 +153,37 @@ public class QuizController {
                 .queryParam("pkQuiz", pkQuiz)
                 .queryParam("username", username);
 
-            ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), HttpMethod.DELETE, null, String.class);
-
-            // Vérifie si la requête est réussie
-            if (response.getStatusCode().is2xxSuccessful()) {
+            try {
+                ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), HttpMethod.DELETE, null, String.class);
+                
                 return ResponseEntity.ok(response.getBody());
-            } else {
-                return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+            } catch (HttpClientErrorException e) {
+                return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
             }
         } else {
             return new ResponseEntity<>("Connexion nécessaire pour la suppression d'un quiz.", HttpStatus.FORBIDDEN);
         }
     }
 
-    @PostMapping(path = "/like")
-    public ResponseEntity<String> like(HttpSession session, @RequestParam Integer pkQuiz) {
+    @PostMapping(path = "/like/{id}")
+    public ResponseEntity<String> like(HttpSession session, @PathVariable("id") Integer pkQuiz) {
         // Vérifie si l'utilisateur est connecté
         User user = (User) session.getAttribute("user");
-        String username = user.getUsername();
-        if (username != null) {
-            Map<String, String> params = new HashMap<String, String>();
-            params.put("quizId", String.valueOf(pkQuiz));
+        if (user != null) {
+            try {
+                restTemplate.getForEntity(baseURLRest1 + "/get/" + pkQuiz, Quiz.class);
+            } catch (HttpClientErrorException e) {
+                return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+            }
 
-            ResponseEntity<String> response = restTemplate.getForEntity(baseURLRest2 + "/userquiz/like", String.class, params);
+            LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("userId", String.valueOf(user.getPKUser()));
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
+            ResponseEntity<String> response = restTemplate.postForEntity(baseURLRest2 + "/userquiz/like/" + String.valueOf(pkQuiz), requestEntity, String.class);
+
             return ResponseEntity.ok(response.getBody());
         } else {
             return new ResponseEntity<>("Connexion nécessaire pour le like d'un quiz.", HttpStatus.FORBIDDEN);
@@ -189,12 +194,13 @@ public class QuizController {
     public ResponseEntity<?> submit(HttpSession session, @RequestBody QuizSubmission quizSubmission) {
         // Vérifie si l'utilisateur est connecté
         User user = (User) session.getAttribute("user");
-        String username = user.getUsername();
-        if (username != null) {
-            ResponseEntity<Quiz> response = restTemplate.getForEntity(baseURLRest2 + "/get/" + quizSubmission.getPkQuiz(), Quiz.class);
-            Quiz quiz = response.getBody();
-            if (quiz == null) {
-                return new ResponseEntity<>("Quiz non trouvé. Id du quiz fourni invalide.", HttpStatus.NOT_FOUND);
+        if (user != null) {
+            Quiz quiz;
+            try {
+                ResponseEntity<Quiz> response = restTemplate.getForEntity(baseURLRest1 + "/get/" + quizSubmission.getPkQuiz(), Quiz.class);
+                quiz = response.getBody();
+            } catch (HttpClientErrorException e) {
+                return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
             }
 
             int points = 0;
@@ -233,11 +239,20 @@ public class QuizController {
             }
 
             // Ajoute les points
-            Map<String, String> params = new HashMap<String, String>();
-            params.put("userId", String.valueOf(user.getPKUser()));
-            params.put("quizId", String.valueOf(quiz.getPkQuiz()));
-            params.put("points", String.valueOf(points));
-            restTemplate.getForEntity(baseURLRest2 + "/userquiz/points/set", Quiz.class);
+            LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("userId", String.valueOf(user.getPKUser()));
+            params.add("quizId", String.valueOf(quiz.getPkQuiz()));
+            params.add("points", String.valueOf(points));
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
+
+            try {
+                restTemplate.postForEntity(baseURLRest1 + "/userquiz/points/set", requestEntity, Quiz.class);
+            } catch (HttpClientErrorException e) {
+                return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+            }
 
             // Retourner le total des points
             return ResponseEntity.ok(points);
@@ -247,17 +262,26 @@ public class QuizController {
     }
 
     @GetMapping(path = "/points")
-    public ResponseEntity<?> points(HttpSession session, @RequestParam Integer quizId) {
+    public ResponseEntity<?> points(HttpSession session, @RequestParam Integer pkQuiz) {
         // Vérifie si l'utilisateur est connecté
         User user = (User) session.getAttribute("user");
-        String username = user.getUsername();
-        if (username != null) {
-            Map<String, String> params = new HashMap<String, String>();
-            params.put("userId", String.valueOf(user.getPKUser()));
-            params.put("quizId", String.valueOf(quizId));
+        if (user != null) {
+            try {
+                restTemplate.getForEntity(baseURLRest1 + "/get/" + pkQuiz, Quiz.class);
+            } catch (HttpClientErrorException e) {
+                return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+            }
 
-            ResponseEntity<String> response = restTemplate.getForEntity(baseURLRest2 + "/userquiz/points/get", String.class, params);
-            return ResponseEntity.ok(response.getBody());
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseURLRest2 + "/userquiz/points/get")
+                .queryParam("userId", user.getPKUser())
+                .queryParam("quizId", pkQuiz);
+
+            try {
+                ResponseEntity<String> response = restTemplate.getForEntity(builder.toUriString(), String.class);
+                return ResponseEntity.ok(response.getBody());
+            } catch (HttpClientErrorException e) {
+                return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+            }
         } else {
             return new ResponseEntity<>("Connexion nécessaire pour avoir les points d'un quiz.", HttpStatus.FORBIDDEN);
         }
