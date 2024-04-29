@@ -5,7 +5,7 @@
  * @version 1.0 / 29.04.2024
  */
 
-var BASE_URL = "https://youquizapi.morisettid.ch/";
+var BASE_URL = "http://localhost/";
 
 /**
  * Fonction permettant de demander les infos de l'utilisateur.

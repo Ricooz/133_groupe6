@@ -22,8 +22,8 @@ class LoginCtrl {
       connecterUtilisateur(nom, motDePasse, (data) => {
         this.vueService.utilisateurConnecte(data.username);
         this.vueService.changerVue("home", true);
-      }, (jqXHR) => {
-        this.vueService.afficherErreur(jqXHR.responseJSON.message);
+      }, () => {
+        this.vueService.afficherErreur("Nom d'utilisateur ou mot passe invalide.");
       });
     });
   }

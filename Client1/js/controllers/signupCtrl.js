@@ -25,8 +25,8 @@ class SignupCtrl {
         enregistrerUtilisateur(nom, motDePasse, (data) => {
           this.vueService.utilisateurConnecte(data.username);
           this.vueService.changerVue("home", true);
-        }, (jqXHR) => {
-          this.vueService.afficherErreur(jqXHR.responseJSON.message);
+        }, () => {
+          this.vueService.afficherErreur("Nom d'utilisateur déja utilisé.");
         });
       } else {
         $("#password").val("");

@@ -9,7 +9,6 @@ class VueService {
     this.indexCtrl = indexCtrl;
     this.root = window.location.pathname.substring(0, window.location.pathname.lastIndexOf("/") + 1);
     this.root = this.root.slice(0, -1); // Removes the last /
-    console.log(this.root)
     
     if (username) {
       this.utilisateurConnecte(username);
@@ -110,11 +109,12 @@ class VueService {
     $(".boutonsDroit").html('<div class="block rounded-md px-4 py-3 text-xl font-medium text-gray-500">' + username + '</div><a href="#" class="block rounded-md px-4 py-3 text-xl font-medium text-gray-300 hover:bg-gray-700 deconnecterButton">Deconnexion</a>');
     $(".deconnecterButton").click((event) => {
       event.preventDefault();
-      deconnecterUtilisateur((data) => {
+      deconnecterUtilisateur(() => {
         this.utilisateurDeconnecte();
         this.changerVue("home");
-      }, (jqXHR) => {
-        this.afficherErreur(jqXHR.responseJSON.message, () => { });
+      }, () => {
+        this.utilisateurDeconnecte();
+        this.changerVue("home");
       });
     });
   }

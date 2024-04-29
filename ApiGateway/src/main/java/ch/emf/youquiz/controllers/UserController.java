@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -63,14 +66,17 @@ public class UserController {
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
         
         try {
-            ResponseEntity<User> response = restTemplate.postForEntity(baseURLRest2 + "/user/login", requestEntity, User.class);
+            ResponseEntity<User> response = restTemplate.exchange(baseURLRest2 + "/user/login", HttpMethod.POST, requestEntity, User.class);
             User user = response.getBody();
 
             session.setAttribute("user", user);
             return ResponseEntity.ok(Collections.singletonMap("username", user.getUsername()));
         } catch (HttpClientErrorException e) {
-            System.err.println(e.getResponseBodyAsString());
-            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                return ResponseEntity.status(e.getStatusCode()).body("Nom d'utilisateur ou mot passe invalide.");
+            } else {
+                return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+            }
         }
     }
 

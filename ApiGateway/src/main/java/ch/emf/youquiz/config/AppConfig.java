@@ -20,7 +20,7 @@ public class AppConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost", "https://morisettid.emf-informatique.ch") // replace with your origin
+                        .allowedOrigins("http://localhost:5500", "https://morisettid.emf-informatique.ch") // replace with your origin
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowCredentials(true);
             }
