@@ -1,16 +1,16 @@
 /*
-  But : contrôleur de la vue projets
+  But : contrôleur de la vue creation
   Auteur : Morisetti David
   Date :   01.03.2023 / V1.0
 */
 
-class ProjetsCtrl {
+class CreationCtrl {
   constructor(vueService) {
     this.vueService = vueService;
   }
 
   estAutorise() {
-    return this.vueService.indexCtrl.utilisateur !== null && this.vueService.indexCtrl.utilisateur !== undefined;
+    return this.vueService.indexCtrl.username !== null && this.vueService.indexCtrl.username !== undefined;
   }
   
   pasAutorise() {

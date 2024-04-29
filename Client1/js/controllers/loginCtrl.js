@@ -20,8 +20,8 @@ class LoginCtrl {
       var motDePasse = $("#password").val();
 
       connecterUtilisateur(nom, motDePasse, (data) => {
-        this.vueService.utilisateurConnecte(new Utilisateur(data.pk_utilisateur, data.nom, data.estAdmin));
-        this.vueService.changerVue("projets");
+        this.vueService.utilisateurConnecte(data.username);
+        this.vueService.changerVue("home", true);
       }, (jqXHR) => {
         this.vueService.afficherErreur(jqXHR.responseJSON.message);
       });

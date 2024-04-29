@@ -1,10 +1,10 @@
 /*
-  But : contrôleur de la vue signin
+  But : contrôleur de la vue signup
   Auteur : Morisetti David
   Date :   01.03.2023 / V1.0
 */
 
-class SigninCtrl {
+class SignupCtrl {
   constructor(vueService) {
     this.vueService = vueService;
   }
@@ -23,8 +23,8 @@ class SigninCtrl {
       // Annule si la confirmation du mot de passe n'est pas egal
       if (motDePasse === confirmationMotDePasse) {
         enregistrerUtilisateur(nom, motDePasse, (data) => {
-          this.vueService.utilisateurConnecte(new Utilisateur(data.pk_utilisateur, data.nom, data.estAdmin));
-          this.vueService.changerVue("projets");
+          this.vueService.utilisateurConnecte(data.username);
+          this.vueService.changerVue("home", true);
         }, (jqXHR) => {
           this.vueService.afficherErreur(jqXHR.responseJSON.message);
         });

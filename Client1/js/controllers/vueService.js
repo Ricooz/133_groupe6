@@ -5,11 +5,14 @@
 */
 
 class VueService {
-  constructor(indexCtrl, premierVue, utilisateur) {
+  constructor(indexCtrl, premierVue, username) {
     this.indexCtrl = indexCtrl;
-
-    if (utilisateur) {
-      this.utilisateurConnecte(utilisateur);
+    this.root = window.location.pathname.substring(0, window.location.pathname.lastIndexOf("/") + 1);
+    this.root = this.root.slice(0, -1); // Removes the last /
+    console.log(this.root)
+    
+    if (username) {
+      this.utilisateurConnecte(username);
     } else {
       this.utilisateurDeconnecte();
     }
@@ -17,18 +20,16 @@ class VueService {
     this.fichierHTML = "";
     this.fichiersHTML = {
       home: "",
-      projets: "",
+      creation: "",
       login: "",
-      signin: "",
-      admin: "",
+      signup: "",
     };
 
     this.controllers = {
       home: "",
-      projets: "",
+      creation: "",
       login: "",
-      signin: "",
-      admin: "",
+      signup: "",
     };
 
     this.chargerFichiersJS();
@@ -60,22 +61,24 @@ class VueService {
 
   chargerFichiersJS() {
     this.controllers["home"] = new HomeCtrl(this);
-    this.controllers["projets"] = new ProjetsCtrl(this);
+    this.controllers["creation"] = new CreationCtrl(this);
     this.controllers["login"] = new LoginCtrl(this);
-    this.controllers["signin"] = new SigninCtrl(this);
-    this.controllers["admin"] = new AdminCtrl(this);
+    this.controllers["signup"] = new SignupCtrl(this);
   }
 
-  changerVue(vue) {
-    if (this.fichiersHTML[vue] !== null && this.fichierHTML !== vue) {
-      let root = window.location.pathname.substring(0, window.location.pathname.lastIndexOf("/") + 1);
+  changerVue(vue, reload) {
+    if (this.fichierHTML !== vue || reload === true) { // Si cette vu n'est pas déja chargé
+      if (this.fichiersHTML[vue] === undefined) { // Si cette n'existe pas
+        vue = "home";
+      }
+
       if (this.controllers[vue].estAutorise()) {
         if (vue === "home") {
           $("#content").html(this.fichiersHTML[vue]);
-          history.pushState({ page: vue }, vue, root);
+          history.pushState({ page: vue }, vue, this.root);
         } else {
           $("#content").html(this.fichiersHTML[vue]);
-          history.pushState({ page: vue }, vue, root + vue);
+          history.pushState({ page: vue }, vue, this.root + "/" + vue);
         }
       } else {
         this.controllers[vue].pasAutorise();
@@ -86,34 +89,25 @@ class VueService {
     }
   }
 
-  utilisateurConnecte(utilisateur) {
-    if (this.indexCtrl.utilisateur !== null && this.indexCtrl.utilisateur !== undefined) {
+  utilisateurConnecte(username) {
+    if (this.indexCtrl.username !== null && this.indexCtrl.username !== undefined) {
       return
     }
-    this.indexCtrl.utilisateur = utilisateur;
+    this.indexCtrl.username = username;
 
-    let htmlGauche = '<a href="#" class="g-gray-900 text-white rounded-md px-4 py-4 text-xl font-medium homeButton" aria-current="page">Home</a><a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-4 py-3 text-xl font-medium projetsButton">Mes projets</a>';
-    if (utilisateur.isAdmin()) {
-      htmlGauche += '<a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-4 py-3 text-xl font-medium adminButton">Administrateur</a>';
-    }
+    let htmlGauche = '<a href="#" class="g-gray-900 text-white rounded-md px-4 py-4 text-xl font-medium homeButton" aria-current="page">Home</a><a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-4 py-3 text-xl font-medium creationButton">Création</a>';
     $(".boutonsGauche").html(htmlGauche);
 
     $(".homeButton").click((event) => {
       event.preventDefault();
       this.changerVue("home");
     });
-    $(".projetsButton").click((event) => {
+    $(".creationButton").click((event) => {
       event.preventDefault();
-      this.changerVue("projets");
+      this.changerVue("creation");
     });
-    if (utilisateur.isAdmin()) {
-      $(".adminButton").click((event) => {
-        event.preventDefault();
-        this.changerVue("admin");
-      });
-    }
 
-    $(".boutonsDroit").html('<div class="block rounded-md px-4 py-3 text-xl font-medium text-gray-500">' + utilisateur.getNom() + '</div><a href="#" class="block rounded-md px-4 py-3 text-xl font-medium text-gray-300 hover:bg-gray-700 deconnecterButton">Deconnexion</a>');
+    $(".boutonsDroit").html('<div class="block rounded-md px-4 py-3 text-xl font-medium text-gray-500">' + username + '</div><a href="#" class="block rounded-md px-4 py-3 text-xl font-medium text-gray-300 hover:bg-gray-700 deconnecterButton">Deconnexion</a>');
     $(".deconnecterButton").click((event) => {
       event.preventDefault();
       deconnecterUtilisateur((data) => {
@@ -126,10 +120,10 @@ class VueService {
   }
 
   utilisateurDeconnecte() {
-    if (this.indexCtrl.utilisateur === null) {
+    if (this.indexCtrl.username === null) {
       return
     }
-    this.indexCtrl.utilisateur = null;
+    this.indexCtrl.username = null;
 
     $(".boutonsGauche").html('<a href="#" class="g-gray-900 text-white rounded-md px-4 py-4 text-xl font-medium homeButton" aria-current="page">Home</a>');
     $(".homeButton").click((event) => {
@@ -144,7 +138,7 @@ class VueService {
     });
     $(".enregistrerButton").click((event) => {
       event.preventDefault();
-      this.changerVue("signin");
+      this.changerVue("signup");
     });
   }
 

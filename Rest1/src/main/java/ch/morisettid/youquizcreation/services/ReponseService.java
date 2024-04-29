@@ -57,6 +57,7 @@ public class ReponseService {
             if (question.getQuiz().getUsername().equals(username)) { // Change seulement si l'utilisateur le détient
                 Reponse reponse = new Reponse();
                 reponse.setNom(nom);
+                reponse.setQuestion(question);
                 reponse.setCorrect(correct);
                 reponseRepository.save(reponse);
                 reponseDTO = reponse.toDTO();  
