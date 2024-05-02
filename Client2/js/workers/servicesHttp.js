@@ -4,7 +4,7 @@
  * @author Richoz Matteo
  * @version 1.0 / 02.05.2024
  */
-var BASE_URL = "http://localhost/";
+var BASE_URL = "http://backend6.emf4you.ch/";
 
 /**
  * Fonction permettant de demander la liste des quiz d'un utilisateur au serveur.
