@@ -14,7 +14,7 @@ class VueService {
     if (username) {
       this.utilisateurConnecte(username);
     } else {
-      this.utilisateurDeconnecte();
+      this.utilisateurDeconnecte(true);
     }
 
     this.fichierHTML = "";
@@ -120,8 +120,8 @@ class VueService {
     });
   }
 
-  utilisateurDeconnecte() {
-    if (this.indexCtrl.username === null) {
+  utilisateurDeconnecte(firstLoad) {
+    if (this.indexCtrl.username === null && !firstLoad) {
       return
     }
     this.indexCtrl.username = null;

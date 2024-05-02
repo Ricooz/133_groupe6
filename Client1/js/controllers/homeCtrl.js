@@ -74,7 +74,7 @@ class HomeCtrl {
   }
 
   nouveauElementQuiz(quiz) {
-    let htmlQuiz = 
+    
   }
 
   nouveauElementProjet(projet, creerApres) {
