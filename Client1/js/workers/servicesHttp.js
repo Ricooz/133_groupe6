@@ -5,7 +5,7 @@
  * @version 1.0 / 29.04.2024
  */
 
-var BASE_URL = "http://localhost/";
+var BASE_URL = "https://backend-6.emf4you.ch/";
 
 /**
  * Fonction permettant de demander les infos de l'utilisateur.
