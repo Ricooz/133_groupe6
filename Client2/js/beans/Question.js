@@ -1,11 +1,21 @@
 class Question {
     constructor(pkQuestion, nom, reponses) {
-        this.pkQuestion = pkQuestion;
-        this.nom = nom;
-        this.reponses = reponses;
+        this.pkQuestion = pkQuestion || null;
+        this.nom = nom || '';
+        this.reponses = reponses || [];
     }
-    
-    // Getters and setters
+
+    static fromJSON(questionJSON) {
+        let reponses = [];
+        if (questionJSON.reponses.length > 0) {
+            questionJSON.reponses.forEach(reponseJSON => {
+                reponses.push(Reponse.fromJSON(reponseJSON));
+            });
+        }
+        return new Question(questionJSON.pkQuestion, questionJSON.nom, reponses);
+    }
+
+    // Getters and setters...
     getPkQuestion() {
         return this.pkQuestion;
     }

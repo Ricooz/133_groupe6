@@ -12,11 +12,11 @@ var BASE_URL = "https://backend-6.emf4you.ch/";
  * @param {type} Fonction de callback lors du retour avec succès de l'appel.
  * @param {type} Fonction de callback en cas d'erreur.
  */
-function chargerQuizzes(username, successCallback, errorCallback) {
+function chargerQuizzes(successCallback, errorCallback) {
   $.ajax({
     type: "GET",
     dataType: "json",
-    url: BASE_URL + "quiz/user/" + username,
+    url: BASE_URL + "quiz",
     success: successCallback,
     error: errorCallback,
   });

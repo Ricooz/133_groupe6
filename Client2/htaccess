@@ -1,14 +1,9 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
-  # 133
-  RewriteBase /133
-
   # Redirect to index.html for non-whitelisted URLs
   RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule ^/133/ /133/index.html
-
-  RewriteRule ^/133 /133/index.html
+  RewriteRule ^ "/133/index.html"
 </IfModule>
 
 # php -- BEGIN cPanel-generated handler, do not edit

@@ -1,11 +1,15 @@
 class Reponse {
     constructor(pkReponse, nom, correct) {
-        this.pkReponse = pkReponse;
-        this.nom = nom;
-        this.correct = correct;
+        this.pkReponse = pkReponse || null;
+        this.nom = nom || '';
+        this.correct = correct || false;
     }
-    
-    // Getters and setters
+
+    static fromJSON(reponseJSON) {
+        return new Reponse(reponseJSON.pkReponse, reponseJSON.nom, reponseJSON.correct);
+    }
+
+    // Getters and setters...
     getPkReponse() {
         return this.pkReponse;
     }

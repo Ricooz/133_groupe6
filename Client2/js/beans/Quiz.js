@@ -1,14 +1,24 @@
 class Quiz {
     constructor(pkQuiz, nom, description, username, questions) {
-        this.pkQuiz = pkQuiz;
-        this.nom = nom;
-        this.description = description;
-        this.username = username;
+        this.pkQuiz = pkQuiz || null;
+        this.nom = nom || '';
+        this.description = description || '';
+        this.username = username || '';
         this.likes = 0;
-        this.questions = questions;
+        this.questions = questions || [];
     }
-    
-    // Getters and setters
+
+    static fromJSON(quizJSON) {
+        let questions = [];
+        if (quizJSON.questions.length > 0) {
+            quizJSON.questions.forEach(questionJSON => {
+                questions.push(Question.fromJSON(questionJSON));
+            });
+        }
+        return new Quiz(quizJSON.pkQuiz, quizJSON.nom, quizJSON.description, quizJSON.username, questions);
+    }
+
+    // Getters and setters...
     getPkQuiz() {
         return this.pkQuiz;
     }
