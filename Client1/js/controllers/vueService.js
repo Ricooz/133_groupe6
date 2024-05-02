@@ -7,6 +7,7 @@
 class VueService {
   constructor(indexCtrl, premierVue, username) {
     this.indexCtrl = indexCtrl;
+    this.indexCtrl.username = null;
     this.root = window.location.pathname.substring(0, window.location.pathname.lastIndexOf("/") + 1);
     this.root = this.root.slice(0, -1); // Removes the last /
     
@@ -89,7 +90,7 @@ class VueService {
   }
 
   utilisateurConnecte(username) {
-    if (this.indexCtrl.username !== null && this.indexCtrl.username !== undefined) {
+    if (this.indexCtrl.username !== null) {
       return
     }
     this.indexCtrl.username = username;

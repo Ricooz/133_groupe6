@@ -86,3 +86,19 @@ function enregistrerUtilisateur(nom, motDePasse, successCallback, errorCallback)
     error: errorCallback,
   });
 }
+
+/**
+ * Fonction permettant de demander la liste des quiz d'un utilisateur au serveur.
+ * @param {type} String categorie de projet.
+ * @param {type} Fonction de callback lors du retour avec succès de l'appel.
+ * @param {type} Fonction de callback en cas d'erreur.
+ */
+function chargerQuizzes(username, successCallback, errorCallback) {
+  $.ajax({
+    type: "GET",
+    dataType: "json",
+    url: BASE_URL + "quiz/user/" + username,
+    success: successCallback,
+    error: errorCallback,
+  });
+}

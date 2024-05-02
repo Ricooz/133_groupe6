@@ -14,7 +14,20 @@ class HomeCtrl {
   }
 
   load() {
-    chargerProjets("", 0, (data) => {
+    if (this.vueService.indexCtrl.username !== null) {
+      chargerQuizzes(this.vueService.indexCtrl.username, (data) => {
+        $("#quizzes").html("");
+        data.forEach((elementQuiz) => {
+          let quiz = Quiz.fromJSON(elementQuiz);
+          console.log(quiz)
+          this.nouveauElementQuiz(quiz);
+        });
+      });
+    } else {
+      $("#quizzes").html(`<div class="text-gray-500 py-8 mt-16 text-2xl font-bold">Vous devez vous connecter pour créer ou voir vos quiz</div>`);
+    }
+
+    /*chargerProjets("", 0, (data) => {
       $("#projets").html("")
       data.forEach((elementP) => {
         let projet = Projet.fromJSON(elementP);
@@ -43,7 +56,7 @@ class HomeCtrl {
       });
     }, (jqXHR) => {
       this.vueService.afficherErreur(jqXHR.responseJSON.message, () => { });
-    });
+    });*/
   }
 
   setupBouttons(idBase) {
@@ -58,6 +71,10 @@ class HomeCtrl {
       }
       fonctionnalites.slideToggle(500);
     });
+  }
+
+  nouveauElementQuiz(quiz) {
+    let htmlQuiz = 
   }
 
   nouveauElementProjet(projet, creerApres) {
