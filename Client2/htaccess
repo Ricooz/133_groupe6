@@ -1,0 +1,19 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # 133
+  RewriteBase /133
+
+  # Redirect to index.html for non-whitelisted URLs
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^/133/ /133/index.html
+
+  RewriteRule ^/133 /133/index.html
+</IfModule>
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “alt-php74” package as the default “PHP” programming language.
+<IfModule mime_module>
+  AddHandler application/x-httpd-alt-php74___lsphp .php .php7 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit

@@ -95,7 +95,7 @@ class VueService {
     }
     this.indexCtrl.usernmae = username;
 
-    let htmlGauche = '<a href="#" class="g-gray-900 text-white rounded-md px-4 py-4 text-xl font-medium homeButton" aria-current="page">Home</a><a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-4 py-3 text-xl font-medium projetsButton">Mes projets</a>';
+    let htmlGauche = '<a href="#" class="g-gray-900 text-white rounded-md px-4 py-4 text-xl font-medium homeButton" aria-current="page">Home</a>';
     $(".boutonsGauche").html(htmlGauche);
 
     $(".homeButton").click((event) => {
@@ -151,7 +151,7 @@ class VueService {
       if (callback !== null && typeof callback === 'function') {
         callback();
       }
-      
+
       $("#popup").fadeOut("slow", () => {
         $("#popup").html('');
       });
@@ -166,7 +166,7 @@ class VueService {
       if (callback !== null && typeof callback === 'function') {
         callback();
       }
-      
+
       $("#popup").fadeOut("slow", () => {
         $("#popup").html('');
       });

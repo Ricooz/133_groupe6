@@ -4,7 +4,7 @@
  * @author Richoz Matteo
  * @version 1.0 / 02.05.2024
  */
-var BASE_URL = "http://backend6.emf4you.ch/";
+var BASE_URL = "https://backend-6.emf4you.ch/";
 
 /**
  * Fonction permettant de demander la liste des quiz d'un utilisateur au serveur.
@@ -31,6 +31,9 @@ function chargerUtilisateurInfos(successCallback, errorCallback) {
   $.ajax({
     type: "GET",
     dataType: "json",
+    xhrFields: {
+      withCredentials: true
+    },
     url: BASE_URL + "user",
     success: successCallback,
     error: errorCallback,
