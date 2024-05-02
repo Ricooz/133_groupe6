@@ -93,7 +93,7 @@ class VueService {
     if (this.indexCtrl.username !== null) {
       return;
     }
-    this.indexCtrl.usernmae = username;
+    this.indexCtrl.username = username;
 
     let htmlGauche = '<a href="#" class="g-gray-900 text-white rounded-md px-4 py-4 text-xl font-medium homeButton" aria-current="page">Home</a>';
     $(".boutonsGauche").html(htmlGauche);
