@@ -1,16 +1,25 @@
+/*
+ * Couche de services HTTP (worker).
+ *
+ * @author Richoz Matteo
+ * @version 1.0 / 02.05.2024
+ */
+var BASE_URL = "http://localhost/";
+
 /**
- * Fonction permettant de charger les quiz.
+ * Fonction permettant de demander la liste des quiz d'un utilisateur au serveur.
+ * @param {type} String categorie de projet.
  * @param {type} Fonction de callback lors du retour avec succès de l'appel.
  * @param {type} Fonction de callback en cas d'erreur.
  */
-function chargerQuiz(successCallback, errorCallback) {
-    $.ajax({
-      type: "GET",
-      dataType: "json",
-      url: BASE_URL + "/quiz",
-      success: successCallback,
-      error: errorCallback,
-    });
+function chargerQuizzes(username, successCallback, errorCallback) {
+  $.ajax({
+    type: "GET",
+    dataType: "json",
+    url: BASE_URL + "quiz/user/" + username,
+    success: successCallback,
+    error: errorCallback,
+  });
 }
 
 /**
@@ -20,9 +29,9 @@ function chargerQuiz(successCallback, errorCallback) {
  */
 function chargerUtilisateurInfos(successCallback, errorCallback) {
   $.ajax({
-    type: "POST",
+    type: "GET",
     dataType: "json",
-    url: BASE_URL + "/quiz",
+    url: BASE_URL + "user",
     success: successCallback,
     error: errorCallback,
   });
@@ -38,11 +47,13 @@ function connecterUtilisateur(nom, motDePasse, successCallback, errorCallback) {
     type: "POST",
     dataType: "json",
     data: {
-      action: "connecter",
-      nom: nom,
-      motDePasse: motDePasse,
+      username: nom,
+      password: motDePasse,
     },
-    url: BASE_URL + "/user/login",
+    url: BASE_URL + "user/login",
+    xhrFields: {
+      withCredentials: true
+    },
     success: successCallback,
     error: errorCallback,
   });
@@ -57,10 +68,10 @@ function deconnecterUtilisateur(successCallback, errorCallback) {
   $.ajax({
     type: "POST",
     dataType: "json",
-    data: {
-      action: "deconnecter",
+    url: BASE_URL + "user/logout",
+    xhrFields: {
+      withCredentials: true
     },
-    url: BASE_URL + "/quiz",
     success: successCallback,
     error: errorCallback,
   });
@@ -76,11 +87,13 @@ function enregistrerUtilisateur(nom, motDePasse, successCallback, errorCallback)
     type: "POST",
     dataType: "json",
     data: {
-      action: "enregistrer",
-      nom: nom,
-      motDePasse: motDePasse,
+      username: nom,
+      password: motDePasse,
     },
-    url: BASE_URL + "/quiz",
+    url: BASE_URL + "user/register",
+    xhrFields: {
+      withCredentials: true
+    },
     success: successCallback,
     error: errorCallback,
   });

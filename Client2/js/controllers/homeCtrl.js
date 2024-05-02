@@ -9,25 +9,21 @@ class HomeCtrl {
     this.vueService = vueService;
   }
 
+  estAutorise() {
+    return true;
+  }
+
   load() {
-    chargerQuizzes("", 0, (data) => {
-      $("#quizzes").html("")
-      data.forEach((elementP) => {
-        let quiz = Quiz.fromJSON(elementP);
-        this.nouveauElementProjet(quiz);
+    if (this.vueService.indexCtrl.username !== null) {
+      chargerQuizzes(this.vueService.indexCtrl.username, (data) => {
+        $("#quizzes").html("");
+        data.forEach((elementQuiz) => {
+          let quiz = Quiz.fromJSON(elementQuiz);
+          console.log(quiz)
+          this.nouveauElementQuiz(quiz);
+        });
       });
-      if (data.length === 0) {
-        $("#quizzes").append(`<div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 text-gray-500 text-xl text-center font-bold rounded-xl p-3 my-5">Pas de quizzes trouvés</button>`);
-      } else {
-        $("#quizzes").append(`<button type="button" class="block mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 bg-blue-800 hover:bg-blue-900 text-white text-xl font-bold rounded-xl p-3 my-3 buttonCharger">Charger plus</button>`);
-      }
-
-      this.setupBouttons("quizzes");
-
-
-    }, (jqXHR) => {
-      this.vueService.afficherErreur(jqXHR.responseJSON.message, () => { });
-    });
+    }
   }
 
   setupBouttons(idBase) {
@@ -44,7 +40,7 @@ class HomeCtrl {
     });
   }
 
-  nouveauElementProjet(projet, creerApres) {
+  nouveauElementQuiz(projet, creerApres) {
     let htmlProjet = `<div id="${projet.getPkProjet()}" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 bg-white border-2 border-gray-300 rounded-xl my-10 py-8 flex flex-col projet">
           <div class="py-2 flex flex-row justify-between">
             <p id="project-name" class="sm:text-2xl text-lg font-bold">${projet.getTitre()}</p>
