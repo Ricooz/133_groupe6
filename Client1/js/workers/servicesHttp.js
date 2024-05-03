@@ -89,7 +89,6 @@ function enregistrerUtilisateur(nom, motDePasse, successCallback, errorCallback)
 
 /**
  * Fonction permettant de demander la liste des quiz d'un utilisateur au serveur.
- * @param {type} String categorie de projet.
  * @param {type} Fonction de callback lors du retour avec succès de l'appel.
  * @param {type} Fonction de callback en cas d'erreur.
  */
@@ -98,6 +97,27 @@ function chargerQuizzes(username, successCallback, errorCallback) {
     type: "GET",
     dataType: "json",
     url: BASE_URL + "quiz/user/" + username,
+    success: successCallback,
+    error: errorCallback,
+  });
+}
+
+/**
+ * Fonction permettant de demander de supprimer un quiz au serveur.
+ * @param {type} Fonction de callback lors du retour avec succès de l'appel.
+ * @param {type} Fonction de callback en cas d'erreur.
+ */
+function deleteQuiz(pkQuiz, successCallback, errorCallback) {
+  $.ajax({
+    type: "DELETE",
+    dataType: "json",
+    data: {
+      pkQuiz: pkQuiz,
+    },
+    url: BASE_URL + "quiz/delete",
+    xhrFields: {
+      withCredentials: true
+    },
     success: successCallback,
     error: errorCallback,
   });
