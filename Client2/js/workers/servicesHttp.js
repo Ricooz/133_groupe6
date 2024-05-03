@@ -101,3 +101,29 @@ function enregistrerUtilisateur(nom, motDePasse, successCallback, errorCallback)
     error: errorCallback,
   });
 }
+
+function liker(pkQuiz, successCallback, errorCallback) {
+  $.ajax({
+    type: "POST",
+    dataType: "json",
+    xhrFields: {
+      withCredentials: true
+    },
+    url: BASE_URL + "quiz/like/" + pkQuiz,
+    success: successCallback,
+    error: errorCallback,
+  });
+}
+
+function getQuiz(pkQuiz, successCallback, errorCallback) {
+  $.ajax({
+    type: "GET",
+    dataType: "json",
+    xhrFields: {
+      withCredentials: true
+    },
+    url: BASE_URL + "quiz/get/" + pkQuiz,
+    success: successCallback,
+    error: errorCallback,
+  });
+}

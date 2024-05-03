@@ -1,10 +1,10 @@
 class Quiz {
-    constructor(pkQuiz, nom, description, username, questions) {
+    constructor(pkQuiz, nom, description, username, questions, likes) {
         this.pkQuiz = pkQuiz || null;
         this.nom = nom || '';
         this.description = description || '';
         this.username = username || '';
-        this.likes = 0;
+        this.likes = likes || 0 ;
         this.questions = questions || [];
     }
 
@@ -15,7 +15,7 @@ class Quiz {
                 questions.push(Question.fromJSON(questionJSON));
             });
         }
-        return new Quiz(quizJSON.pkQuiz, quizJSON.nom, quizJSON.description, quizJSON.username, questions);
+        return new Quiz(quizJSON.pkQuiz, quizJSON.nom, quizJSON.description, quizJSON.username, questions, quizJSON.likes);
     }
 
     // Getters and setters...
