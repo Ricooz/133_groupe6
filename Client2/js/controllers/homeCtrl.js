@@ -8,7 +8,7 @@ class HomeCtrl {
   constructor(vueService) {
     this.vueService = vueService;
 
-    this.nouveauQuizElementHTML = `<div class=" basis-5/12 scale-x-110 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 bg-zinc-900 hover:bg-zinc-800 drop-shadow-2xl border-2 hover:border-blue-700 border-zinc-700 rounded-xl my-10 pt-8 pb-4 flex flex-col projet">
+    this.nouveauQuizElementHTML = `<div class=" basis-5/12 scale-x-110 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 bg-zinc-900 hover:bg-zinc-800 drop-shadow-2xl border-2 hover:border-blue-700 border-zinc-700 rounded-xl my-10 pt-8 pb-4 flex flex-col quiz">
       <div class="py-2 flex flex-row justify-between">
           <p class="sm:text-2xl text-lg font-bold text-gray-100 nom">None</p>
           <p class="sm:text-xl text-lg font-bold text-gray-500 createur"><span class="text-gray-400">par
@@ -38,20 +38,23 @@ class HomeCtrl {
         this.nouveauElementQuiz(quiz);
       });
       $(".like").click((event) => {
+        event.stopPropagation();
         const $target = $(event.currentTarget);
         let pkQuiz = $target.parent().parent().attr("id");
-        liker(pkQuiz, () => {}, (jqXHR) => {
+        liker(pkQuiz, () => { }, (jqXHR) => {
           if (jqXHR.status === 403) {
             this.vueService.afficherErreur("Connectez vous pour pouvoir liker", () => { });
           } else if (jqXHR.status === 200) {
             getQuiz(pkQuiz, (data) => {
-              console.log(data.likes);
               $target.find(".likes").text(data.likes);
             }, (jqXHR) => {
               console.log("Quiz pas trouvé");
             });
           }
         });
+      });
+      $(".quiz").click(() => {
+        this.vueService.changerVue("jouer");
       });
     });
   }
@@ -65,6 +68,7 @@ class HomeCtrl {
     elementQuiz.find(".createur").text(quiz.getUsername())
     elementQuiz.find(".questions").text(quiz.getQuestions().length);
     elementQuiz.find(".likes").text(quiz.getLikes());
+    elementQuiz.data
 
     $("#quizzes").append(elementQuiz);
   }
