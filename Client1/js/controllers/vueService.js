@@ -95,16 +95,12 @@ class VueService {
     }
     this.indexCtrl.username = username;
 
-    let htmlGauche = '<a href="#" class="text-white rounded-md px-4 py-4 text-xl font-medium homeButton" aria-current="page">Home</a><a href="#" class="text-gray-300 hover:bg-fuchsia-950 hover:text-white rounded-md px-6 py-5 text-xl font-medium creationButton">Création</a>';
+    let htmlGauche = '<a href="#" class="text-white rounded-md px-4 py-4 text-xl font-medium homeButton" aria-current="page">Home</a>';
     $(".boutonsGauche").html(htmlGauche);
 
     $(".homeButton").click((event) => {
       event.preventDefault();
       this.changerVue("home");
-    });
-    $(".creationButton").click((event) => {
-      event.preventDefault();
-      this.changerVue("creation");
     });
 
     $(".boutonsDroit").html('<div class="block rounded-md px-4 py-3 text-xl font-bold text-purple-950">' + username + '</div><a href="#" class="block rounded-md px-4 py-3 text-xl font-medium text-gray-300 hover:bg-gray-700 deconnecterButton">Deconnexion</a>');
@@ -112,10 +108,10 @@ class VueService {
       event.preventDefault();
       deconnecterUtilisateur(() => {
         this.utilisateurDeconnecte();
-        this.changerVue("home");
+        this.changerVue("home", true);
       }, () => {
         this.utilisateurDeconnecte();
-        this.changerVue("home");
+        this.changerVue("home", true);
       });
     });
   }

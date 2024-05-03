@@ -68,7 +68,9 @@ public class QuizController {
     public ResponseEntity<?> get(@PathVariable("quizId") Integer pkQuiz) {
         try {
             ResponseEntity<Quiz> response = restTemplate.getForEntity(baseURLRest1 + "/get/" + pkQuiz, Quiz.class);
-            return ResponseEntity.ok(response.getBody());
+            Quiz quiz = response.getBody();
+            refreshLike(quiz);
+            return ResponseEntity.ok(quiz);
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
         }
@@ -288,7 +290,7 @@ public class QuizController {
     public void refreshLike(Quiz quiz) {
         String likesResourceUrl = baseURLRest2 + "/userquiz/likes/" + quiz.getPkQuiz();
         ResponseEntity<Integer> likesResponse = restTemplate.getForEntity(likesResourceUrl, Integer.class);
-
+        
         quiz.setLikes(likesResponse.getBody());
     }
 }
