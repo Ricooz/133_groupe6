@@ -1,25 +1,9 @@
-
-
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
-  # ProjectMaker
-  RewriteBase /projectsmaker
-
   # Redirect to index.html for non-whitelisted URLs
   RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule ^/projectsmaker/ /projectsmaker/index.html
-
-  RewriteRule ^/projectsmaker /projectsmaker/index.html
-
-  # YouQuizCreation
-  RewriteBase /youquizcreation
-
-  # Redirect to index.html for non-whitelisted URLs
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule ^/youquizcreation/ /youquizcreation/index.html
-
-  RewriteRule ^/youquizcreation /youquizcreation/index.html
+  RewriteRule ^ /133/index.html
 </IfModule>
 
 # php -- BEGIN cPanel-generated handler, do not edit
