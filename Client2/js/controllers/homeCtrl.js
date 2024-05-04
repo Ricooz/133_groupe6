@@ -48,13 +48,14 @@ class HomeCtrl {
             getQuiz(pkQuiz, (data) => {
               $target.find(".likes").text(data.likes);
             }, (jqXHR) => {
-              console.log("Quiz pas trouvé");
+              console.error("Quiz pas trouvé");
             });
           }
         });
       });
-      $(".quiz").click(() => {
-        this.vueService.changerVue("jouer");
+      $(".quiz").click((event) => {
+        const pkQuiz = $(event.currentTarget).attr("id");
+        this.vueService.changerVue("jouer", false, {pkQuiz: pkQuiz});
       });
     });
   }

@@ -66,7 +66,7 @@ class VueService {
     this.controllers["signup"] = new SignupCtrl(this);
   }
 
-  changerVue(vue, reload) {
+  changerVue(vue, reload, params) {
     if (this.fichierHTML !== vue || reload === true) { // Si cette vu n'est pas déja chargé
       if (this.fichiersHTML[vue] === undefined) { // Si cette vue n'existe pas
         vue = "home";
@@ -85,7 +85,7 @@ class VueService {
       }
 
       this.fichierHTML = vue;
-      this.controllers[vue].load();
+      this.controllers[vue].load(params);
     }
   }
 
