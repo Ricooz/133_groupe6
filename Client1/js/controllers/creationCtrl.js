@@ -38,7 +38,7 @@ class CreationCtrl {
       </div>
     </div>`;
     this.nouvelleReponseHTML = `<div class="flex flex-row items-center reponse">
-      <textarea class="w-full text-gray-300 p-1 border-2 border-zinc-700 bg-zinc-900 rounded-xl my-1" rows="1" placeholder="reponse"></textarea>
+      <textarea class="w-full text-gray-300 p-1 border-2 border-zinc-700 bg-zinc-900 rounded-xl my-1 reponseTitre" rows="1" placeholder="reponse"></textarea>
       <button type="button" class="bg-zinc-800 border-2 border-blue-700 text-white text-md font-bold rounded-xl ml-2 px-3 h-9 buttonCorrecte"><i class="fa-solid fa-check" style="color: #27272a;"></i></button>
       <button type="button" class="bg-red-800 hover:bg-red-700 text-white text-md font-bold rounded-xl ml-2 px-3 h-9 buttonDeleteReponse"><i class="fa-solid fa-trash" style="color: #ffffff;"></i></button>
     </div>`;
@@ -49,7 +49,7 @@ class CreationCtrl {
   estAutorise() {
     return this.vueService.indexCtrl.username !== null;
   }
-  
+
   pasAutorise() {
     this.vueService.afficherErreur("Pas d'utilisateur authentifié.", () => {
       this.vueService.changerVue("login");
@@ -59,11 +59,39 @@ class CreationCtrl {
   load() {
     let currentQuiz = $("#content").data("currentQuiz");
     let elementQuiz = $(this.baseHTML).clone();
-    $("#quiz").append(elementQuiz);
+    $("#quiz").html(elementQuiz);
+
+    if (currentQuiz !== null && currentQuiz !== undefined) {
+      $(".titre").text(currentQuiz.getNom());
+      $(".description").text(currentQuiz.getDescription());
+
+      currentQuiz.getQuestions().forEach(question => {
+        let elementQuestion = $(this.nouvelleQuestionHTML).clone();
+        elementQuestion.find(".questionTitre").text(question.getNom())
+
+        question.getReponses().forEach(reponse => {
+          let elementReponse = $(this.nouvelleReponseHTML).clone();
+          elementReponse.find(".reponseTitre").text(reponse.getNom())
+
+          let elementCorrect = elementReponse.find(".buttonCorrecte");
+          if (reponse.isCorrect()) {
+            elementCorrect.replaceWith(this.buttonChecked);
+            elementCorrect.data("correcte", true);
+          } else {
+            elementCorrect.replaceWith(this.buttonUnchecked);
+            elementCorrect.data("correcte", false);
+          }
+
+          elementQuestion.append(elementReponse);
+        });
+
+        $("#questionsContainer").append(elementQuestion);
+      });
+    }
 
     $(".bouttonDelete").click((event) => {
-      if (currentQuiz){
-        deleteQuiz(currentQuiz.getPkQuiz(), () => {
+      if (currentQuiz) {
+        deleteElement(currentQuiz.getPkQuiz(), "quiz", () => {
           this.vueService.changerVue("home");
         }, () => {
           this.vueService.changerVue("home");
@@ -74,7 +102,8 @@ class CreationCtrl {
     });
 
     $(".buttonSave").click((event) => {
-      
+      let nom = $(".titre").val();
+      let description = $(".description").val();
     });
 
     $(".buttonCancel").click((event) => {
@@ -84,33 +113,29 @@ class CreationCtrl {
     $(".buttonNouvelleQuestion").click((event) => {
       let elementQuestion = $(this.nouvelleQuestionHTML).clone();
       $("#questionsContainer").append(elementQuestion);
-      
-      elementQuestion.find(".buttonNouvelleReponse").click((event) => {
-        let elementReponse = $(this.nouvelleReponseHTML).clone();
-        elementQuestion.append(elementReponse);
-
-        elementQuestion.on("click", ".buttonCorrecte", (event) => {
-          if ($(event.currentTarget).hasClass("bg-zinc-800")) { // Est unchecked
-            $(event.currentTarget).replaceWith(this.buttonChecked);
-            $(event.currentTarget).data("correcte", true);
-          } else {
-            $(event.currentTarget).replaceWith(this.buttonUnchecked);
-            $(event.currentTarget).data("correcte", false);
-          }
-        });
-
-        elementReponse.find(".buttonDeleteReponse").click((event) => {
-          elementReponse.remove();
-        });
-      });
-
-      elementQuestion.find(".buttonDeleteQuestion").click((event) => {
-        elementQuestion.remove();
-      });
     });
-    
-    if (currentQuiz !== null) {
-      
-    }
+
+    elementQuiz.on("click", ".buttonDeleteQuestion", (event) => {
+      $(event.currentTarget).parent().parent().remove()
+    });
+
+    elementQuiz.on("click", ".buttonNouvelleReponse", (event) => {
+      let elementReponse = $(this.nouvelleReponseHTML).clone();
+      $(event.currentTarget).parent().parent().append(elementReponse);
+    });
+
+    elementQuiz.on("click", ".buttonDeleteReponse", (event) => {
+      $(event.currentTarget).parent().remove()
+    });
+
+    elementQuiz.on("click", ".buttonCorrecte", (event) => {
+      if ($(event.currentTarget).hasClass("bg-zinc-800")) { // Est unchecked
+        $(event.currentTarget).replaceWith(this.buttonChecked);
+        $(event.currentTarget).data("correcte", true);
+      } else {
+        $(event.currentTarget).replaceWith(this.buttonUnchecked);
+        $(event.currentTarget).data("correcte", false);
+      }
+    });
   }
 }
