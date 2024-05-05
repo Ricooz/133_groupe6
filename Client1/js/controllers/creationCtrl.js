@@ -68,10 +68,12 @@ class CreationCtrl {
       currentQuiz.getQuestions().forEach(question => {
         let elementQuestion = $(this.nouvelleQuestionHTML).clone();
         elementQuestion.find(".questionTitre").text(question.getNom())
+        elementQuestion.data("pk", question.getPkQuestion());
 
         question.getReponses().forEach(reponse => {
           let elementReponse = $(this.nouvelleReponseHTML).clone();
           elementReponse.find(".reponseTitre").text(reponse.getNom())
+          elementReponse.data("pk", question.getPkReponse());
 
           let elementCorrect = elementReponse.find(".buttonCorrecte");
           if (reponse.isCorrect()) {
@@ -104,6 +106,12 @@ class CreationCtrl {
     $(".buttonSave").click((event) => {
       let nom = $(".titre").val();
       let description = $(".description").val();
+
+      if (currentQuiz) { // UPDATE si le quiz existe déja
+        
+      } else { // ADD si le quiz est nouveau
+
+      }
     });
 
     $(".buttonCancel").click((event) => {

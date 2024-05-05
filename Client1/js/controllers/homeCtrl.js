@@ -44,7 +44,7 @@ class HomeCtrl {
         });
 
         $("#quizzes").html("");
-        if (data.length > 1) {
+        if (data.length > 0) {
           data.forEach((elementQuiz) => {
             let quiz = Quiz.fromJSON(elementQuiz);
             this.nouveauElementQuiz(quiz);

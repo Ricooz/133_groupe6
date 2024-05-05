@@ -103,18 +103,55 @@ function chargerQuizzes(username, successCallback, errorCallback) {
 }
 
 /**
+ * Fonction permettant de demander le rajout d'un quiz au serveur.
+ * @param {type} Fonction de callback lors du retour avec succès de l'appel.
+ * @param {type} Fonction de callback en cas d'erreur.
+ */
+function rajouterQuiz(nom, description, successCallback, errorCallback) {
+  $.ajax({
+    type: "POST",
+    dataType: "json",
+    data: {
+      nom: nom,
+      description: description
+    },
+    url: BASE_URL + "quiz/add",
+    success: successCallback,
+    error: errorCallback,
+  });
+}
+
+/**
+ * Fonction permettant de demander la liste des quiz d'un utilisateur au serveur.
+ * @param {type} Fonction de callback lors du retour avec succès de l'appel.
+ * @param {type} Fonction de callback en cas d'erreur.
+ */
+function rajouterQuiz(pk, nom, description, successCallback, errorCallback) {
+  $.ajax({
+    type: "POST",
+    dataType: "json",
+    data: {
+      nom: nom,
+      description: description
+    },
+    url: BASE_URL + "quiz/add",
+    success: successCallback,
+    error: errorCallback,
+  });
+}
+
+/**
  * Fonction permettant de demander de supprimer un element au serveur.
  * @param {type} Fonction de callback lors du retour avec succès de l'appel.
  * @param {type} Fonction de callback en cas d'erreur.
  */
 function deleteElement(pk, element, successCallback, errorCallback) {
-  let data = {};
-  data[element] = pk;
-
   $.ajax({
     type: "DELETE",
     dataType: "json",
-    data: data,
+    data: {
+      pk: pk
+    },
     url: BASE_URL + element + "/delete",
     xhrFields: {
       withCredentials: true
