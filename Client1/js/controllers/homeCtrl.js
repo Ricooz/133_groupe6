@@ -39,23 +39,28 @@ class HomeCtrl {
         let bouttonNouveauQuiz = $(".bouttonNouveauQuiz");
         bouttonNouveauQuiz.show();
         bouttonNouveauQuiz.click(() => {
+          $("#content").data("currentQuiz", null);
           this.vueService.changerVue("creation");
         });
 
         $("#quizzes").html("");
-        data.forEach((elementQuiz) => {
-          let quiz = Quiz.fromJSON(elementQuiz);
-          this.nouveauElementQuiz(quiz);
-        });
+        if (data.length > 1) {
+          data.forEach((elementQuiz) => {
+            let quiz = Quiz.fromJSON(elementQuiz);
+            this.nouveauElementQuiz(quiz);
+          });
+        } else {
+          $("#quizzes").html(`<div class="text-gray-500 text-center py-8 mt-16 text-2xl font-bold">Vous n'avez pas encore de quiz</div>`);
+        }
 
         $(".quiz").click((event) => {
           $("#content").data("currentQuiz", $(event.currentTarget).data("quiz"));
           this.vueService.changerVue("creation");
         });
-        
+
         $(".bouttonDelete").click((event) => {
           event.stopPropagation();
-          deleteQuiz($(event.currentTarget).parent().parent().parent().attr("id"), () => {
+          deleteElement($(event.currentTarget).parent().parent().parent().attr("id"), "quiz", () => {
             this.load()
           }, () => {
             this.load()
@@ -70,7 +75,7 @@ class HomeCtrl {
 
   nouveauElementQuiz(quiz) {
     let elementQuiz = $(this.nouveauQuizElementHTML).clone();
-    
+
     elementQuiz.attr("id", quiz.getPkQuiz());
     elementQuiz.find(".nom").text(quiz.getNom());
     elementQuiz.find(".description").text(quiz.getDescription());

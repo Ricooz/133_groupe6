@@ -65,9 +65,9 @@ public class QuizController {
     }
 
     @GetMapping("/get/{quizId}")
-    public ResponseEntity<?> get(@PathVariable("quizId") Integer pkQuiz) {
+    public ResponseEntity<?> get(@PathVariable("quizId") Integer pk) {
         try {
-            ResponseEntity<Quiz> response = restTemplate.getForEntity(baseURLRest1 + "/get/" + pkQuiz, Quiz.class);
+            ResponseEntity<Quiz> response = restTemplate.getForEntity(baseURLRest1 + "/get/" + pk, Quiz.class);
             Quiz quiz = response.getBody();
             refreshLike(quiz);
             return ResponseEntity.ok(quiz);
@@ -112,14 +112,14 @@ public class QuizController {
     }
 
     @PutMapping(value = "/update")
-    public ResponseEntity<?> update(HttpSession session, @RequestParam Integer pkQuiz, @RequestParam String nom, @RequestParam String description) {
+    public ResponseEntity<?> update(HttpSession session, @RequestParam Integer pk, @RequestParam String nom, @RequestParam String description) {
         // Vérifie si l'utilisateur est connecté
         User user = (User) session.getAttribute("user");
         if (user != null) {
             String username = user.getUsername();
 
             LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-            params.add("pkQuiz", String.valueOf(pkQuiz));
+            params.add("pkQuiz", String.valueOf(pk));
             params.add("nom", nom);
             params.add("description", description);
             params.add("username", username);
@@ -143,14 +143,14 @@ public class QuizController {
     }
 
     @DeleteMapping(value = "/delete")
-    public ResponseEntity<String> delete(HttpSession session, @RequestParam Integer pkQuiz) {
+    public ResponseEntity<String> delete(HttpSession session, @RequestParam Integer pk) {
         // Vérifie si l'utilisateur est connecté
         User user = (User) session.getAttribute("user");
         if (user != null) {
             String username = user.getUsername();
 
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseURLRest1 + "/delete")
-                .queryParam("pkQuiz", pkQuiz)
+                .queryParam("pkQuiz", pk)
                 .queryParam("username", username);
 
             try {
@@ -262,19 +262,19 @@ public class QuizController {
     }
 
     @GetMapping(path = "/points")
-    public ResponseEntity<?> points(HttpSession session, @RequestParam Integer pkQuiz) {
+    public ResponseEntity<?> points(HttpSession session, @RequestParam Integer pk) {
         // Vérifie si l'utilisateur est connecté
         User user = (User) session.getAttribute("user");
         if (user != null) {
             try {
-                restTemplate.getForEntity(baseURLRest1 + "/get/" + pkQuiz, Quiz.class);
+                restTemplate.getForEntity(baseURLRest1 + "/get/" + pk, Quiz.class);
             } catch (HttpClientErrorException e) {
                 return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
             }
 
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseURLRest2 + "/userquiz/points/get")
                 .queryParam("userId", user.getPKUser())
-                .queryParam("quizId", pkQuiz);
+                .queryParam("quizId", pk);
 
             try {
                 ResponseEntity<String> response = restTemplate.getForEntity(builder.toUriString(), String.class);

@@ -103,18 +103,19 @@ function chargerQuizzes(username, successCallback, errorCallback) {
 }
 
 /**
- * Fonction permettant de demander de supprimer un quiz au serveur.
+ * Fonction permettant de demander de supprimer un element au serveur.
  * @param {type} Fonction de callback lors du retour avec succès de l'appel.
  * @param {type} Fonction de callback en cas d'erreur.
  */
-function deleteQuiz(pkQuiz, successCallback, errorCallback) {
+function deleteElement(pk, element, successCallback, errorCallback) {
+  let data = {};
+  data[element] = pk;
+
   $.ajax({
     type: "DELETE",
     dataType: "json",
-    data: {
-      pkQuiz: pkQuiz,
-    },
-    url: BASE_URL + "quiz/delete",
+    data: data,
+    url: BASE_URL + element + "/delete",
     xhrFields: {
       withCredentials: true
     },

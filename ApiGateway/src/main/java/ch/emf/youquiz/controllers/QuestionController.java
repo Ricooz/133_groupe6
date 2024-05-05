@@ -119,14 +119,14 @@ public class QuestionController {
     }
 
     @DeleteMapping(value = "/delete")
-    public ResponseEntity<String> delete(HttpSession session, @RequestParam Integer pkQuestion) {
+    public ResponseEntity<String> delete(HttpSession session, @RequestParam Integer pk) {
         // Vérifie si l'utilisateur est connecté
         User user = (User) session.getAttribute("user");
         if (user != null) {
             String username = user.getUsername();
 
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseURLRest1 + "/delete")
-                .queryParam("pkQuestion", pkQuestion)
+                .queryParam("pkQuestion", pk)
                 .queryParam("username", username);
 
             try {
