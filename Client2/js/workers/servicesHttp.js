@@ -127,3 +127,19 @@ function getQuiz(pkQuiz, successCallback, errorCallback) {
     error: errorCallback,
   });
 }
+
+function getPoints(pkQuiz, successCallback, errorCallback) {
+  $.ajax({
+    type: "GET",
+    dataType: "json",
+    data: {
+      quiz: pkQuiz,
+    },
+    xhrFields: {
+      withCredentials: true
+    },
+    url: BASE_URL + "quiz/submit/",
+    success: successCallback,
+    error: errorCallback,
+  });
+}

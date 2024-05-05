@@ -63,20 +63,24 @@ class JouerCtrl {
           }
         }
       }
-      $("#quiz").append(this.buttonSoumettre);
+      let elementSoumettre = $(this.buttonSoumettre).clone();
+      $("#quiz").append(elementSoumettre);
     });
 
-    console.log("load jouer");
+    setTimeout(() => {
+      $(".buttonCancel").click(() => {
+        this.vueService.changerVue("home");
+      });
+    }, 1000);
 
-    $(".buttonCancel").click(() => {
-      console.log("cancel");
-      this.vueService.changerVue("home");
-    });
-
-    $(".buttonValidate").click(() => {
-      
-      this.vueService.changerVue("home");
-    });
+    setTimeout(() => {
+      $(".buttonValidate").click(() => {
+        getPoints(params.pkQuiz, (data) => {
+          
+        });
+        this.vueService.changerVue("home");
+      });
+    }, 1000);
   }
 
   nouvelleQuestion(quiz, numQuestion) {
