@@ -128,17 +128,19 @@ function getQuiz(pkQuiz, successCallback, errorCallback) {
   });
 }
 
-function getPoints(pkQuiz, successCallback, errorCallback) {
+function getPoints(pkQuiz, questions, successCallback, errorCallback) {
   $.ajax({
-    type: "GET",
+    type: "POST",
+    contentType: "application/json",
     dataType: "json",
-    data: {
-      quiz: pkQuiz,
-    },
+    data: JSON.stringify({
+      pkQuiz: pkQuiz,
+      questions: questions
+    }),
     xhrFields: {
       withCredentials: true
     },
-    url: BASE_URL + "quiz/submit/",
+    url: BASE_URL + "quiz/submit",
     success: successCallback,
     error: errorCallback,
   });

@@ -172,4 +172,19 @@ class VueService {
       });
     });
   }
+
+  afficherScore(message, callback) {
+    $("#popup").hide().html('<div class="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"><div class="rounded-lg bg-gray-50 px-16 py-14 bg-opacity-95 pointer-events-auto"><div class="flex justify-center"><div class="rounded-full bg-blue-200 p-6"><div class="flex h-16 w-16 items-center justify-center rounded-full bg-blue-500 p-4"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-8 w-8 text-white"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div></div></div><h3 class="my-4 text-center text-3xl font-semibold text-gray-700">Score</h3><p class="w-[230px] text-center font-normal text-gray-600">' + message + '</p><button id="buttonPopupOK" class="mx-auto mt-10 block rounded-xl border-4 border-transparent bg-orange-400 px-6 py-3 text-center text-base font-medium text-orange-100 outline-8 hover:outline hover:duration-300">OK</button></div></div>');
+    $("#popup").fadeIn("slow");
+    $("#buttonPopupOK").click((event) => {
+      event.preventDefault();
+      if (callback !== null && typeof callback === 'function') {
+        callback();
+      }
+
+      $("#popup").fadeOut("slow", () => {
+        $("#popup").html('');
+      });
+    });
+  }
 }

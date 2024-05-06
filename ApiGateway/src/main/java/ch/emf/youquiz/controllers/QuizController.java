@@ -247,9 +247,9 @@ public class QuizController {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
             HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
-
+            
             try {
-                restTemplate.postForEntity(baseURLRest1 + "/userquiz/points/set", requestEntity, Quiz.class);
+                restTemplate.postForEntity(baseURLRest2 + "/userquiz/points/set", requestEntity, String.class);
             } catch (HttpClientErrorException e) {
                 return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
             }
