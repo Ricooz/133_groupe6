@@ -19,7 +19,7 @@ class HomeCtrl {
       </div>
       <div class="py-2 flex flex-row justify-between items-center">
           <p class="sm:text-2xl px-3 text-lg font-bold text-indigo-800"><span class="text-gray-300 questions">0</span> Questions</i></p>
-          <div class="like flex items-center pr-3">
+          <div class="like flex items-center pr-3 transition duration-300 hover:scale-125">
               <p class="sm:text-2xl px-3 text-lg font-bold text-gray-400"><i class="fa-solid fa-star" style="color: #FFD43B;"></i><span class="text-gray-300 pl-3 likes">0</span></p>
           </div>
       </div>
