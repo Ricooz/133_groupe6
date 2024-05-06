@@ -9,7 +9,7 @@ class JouerCtrl {
   constructor(vueService) {
     this.vueService = vueService;
 
-    this.titreQuestionnaire = `<div class="basis-5/12 scale-x-110 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 bg-zinc-900 drop-shadow-2xl border-2 border-zinc-700 rounded-xl my-10 pt-8 pb-4 flex flex-col">
+    this.titreQuestionnaire = `<div class="basis-5/12 scale-x-110 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 bg-zinc-900 drop-shadow-2xl border-2 border-zinc-700 rounded-xl my-10 py-4 flex flex-col">
     <p class="sm:text-2xl text-lg font-bold text-gray-100 text-center titreQuestionnaire">Titre</p>
     </div>`
 

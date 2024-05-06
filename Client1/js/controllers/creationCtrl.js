@@ -7,6 +7,10 @@
 class CreationCtrl {
   constructor(vueService) {
     this.vueService = vueService;
+    this.elementsToRemove = {
+      questions: [],
+      reponses: []
+    };
 
     this.baseHTML = `<div class="mx-auto flex flex-col w-full max-w-7xl px-4 pt-6 pb-3 sm:px-6 lg:px-8">
         <div class="text-2xl font-bold text-white p-2">Titre</div>
@@ -61,6 +65,8 @@ class CreationCtrl {
     let elementQuiz = $(this.baseHTML).clone();
     $("#quiz").html(elementQuiz);
 
+
+
     if (currentQuiz !== null && currentQuiz !== undefined) {
       $(".titre").text(currentQuiz.getNom());
       $(".description").text(currentQuiz.getDescription());
@@ -108,17 +114,26 @@ class CreationCtrl {
       let elementsReponse = $(".reponse").clone(true);
       let quizNom = $(".titre").val();
       let quizDescription = $(".description").val();
-      if (currentQuiz && quizNom) { // UPDATE si le quiz existe déja et a un nom
-        modifierQuiz(currentQuiz.getPkQuiz(), quizNom, quizDescription, (data) => {
-          this.saveQuestions(elementsQuestion, elementsReponse, currentQuiz.getPkQuiz());
-        });
-      } else if (quizNom) { // ADD si le quiz est nouveau et a un nom
-        rajouterQuiz(quizNom, quizDescription, (data) => {
-          this.saveQuestions(elementsQuestion, elementsReponse, data.pkQuiz);
-        });
-      }
 
-      this.vueService.changerVue("home");
+      let saveQuestionsPromise = new Promise((resolve, reject) => {
+        if (currentQuiz && quizNom) { // UPDATE if the quiz already exists and has a name
+          modifierQuiz(currentQuiz.getPkQuiz(), quizNom, quizDescription, (data) => {
+            resolve(this.saveQuestions(elementsQuestion, elementsReponse, currentQuiz.getPkQuiz()));
+          });
+        } else if (quizNom) { // ADD if the quiz is new and has a name
+          rajouterQuiz(quizNom, quizDescription, (data) => {
+            resolve(this.saveQuestions(elementsQuestion, elementsReponse, data.pkQuiz));
+          });
+        } else {
+          reject(new Error("Quiz does not exist or does not have a name"));
+        }
+      });
+
+      saveQuestionsPromise.then(() => {
+        this.vueService.changerVue("home");
+      }).catch((error) => {
+        console.error(error);
+      });
     });
 
     $(".buttonCancel").click((event) => {
@@ -131,7 +146,14 @@ class CreationCtrl {
     });
 
     elementQuiz.on("click", ".buttonDeleteQuestion", (event) => {
-      $(event.currentTarget).parent().parent().remove()
+      let questionElement = $(event.currentTarget).parent().parent()
+
+      // Si la question éxistait déjà
+      let pkQuestion = questionElement.data("pk");
+      if (pkQuestion) {
+        this.elementsToRemove["questions"].push(pkQuestion);
+      }
+      questionElement.remove()
     });
 
     elementQuiz.on("click", ".buttonNouvelleReponse", (event) => {
@@ -140,7 +162,14 @@ class CreationCtrl {
     });
 
     elementQuiz.on("click", ".buttonDeleteReponse", (event) => {
-      $(event.currentTarget).parent().remove()
+      let reponseElement = $(event.currentTarget).parent()
+
+      // Si la réponse éxistait déjà
+      let pkReponse = reponseElement.data("pk");
+      if (pkReponse) {
+        this.elementsToRemove["reponses"].push(pkReponse);
+      }
+      reponseElement.remove()
     });
 
     elementQuiz.on("click", ".buttonCorrecte", (event) => {
@@ -155,44 +184,85 @@ class CreationCtrl {
   }
 
   saveQuestions(elementsQuestion, elementsReponse, pkQuiz) {
-    console.log(elementsQuestion.first().data("pk"))
-    elementsQuestion.each(function (index, elementQuestion) { // Questions
+    let promises = [];
+
+    this.elementsToRemove["questions"].forEach(pkQuestion => {
+      let promise = new Promise((resolve, reject) => {
+        deleteElement(pkQuestion, "question", resolve, resolve);
+      });
+
+      promises.push(promise);
+    });
+
+    this.elementsToRemove["reponses"].forEach(pkReponse => {
+      let promise = new Promise((resolve, reject) => {
+        deleteElement(pkReponse, "reponse", resolve, resolve);
+      });
+
+      promises.push(promise);
+    });
+
+    elementsQuestion.each(function (index, elementQuestion) {
       elementQuestion = $(elementQuestion);
 
       let pkQuestion = elementQuestion.data("pk");
-      console.log(pkQuestion)
       let questionNom = elementQuestion.find(".questionTitre").val();
-      if (pkQuestion && questionNom) { // UPDATE si la question existe déja et a un nom
-        modifierQuestion(pkQuestion, questionNom, (data) => {
-          elementQuestion.find(".reponse").each(function () {
-            let elementReponse = $(this)
 
-            let pkReponse = elementReponse.data("pk");
-            let reponseNom = elementReponse.find(".reponseTitre").val();
-            let correct = elementReponse.find(".buttonCorrecte").hasClass("bg-blue-700");
-            if (pkReponse && reponseNom) { // UPDATE si la réponse existe déja et a un nom
-              modifierReponse(pkReponse, reponseNom, correct);
-            } else if (reponseNom) { // ADD si la réponse est nouvelle et a un nom
-              rajouterReponse(reponseNom, correct, data.pkQuestion);
-            }
-          });
-        });
-      } else if (questionNom) { // ADD si la question est nouvelle et a un nom
-        rajouterQuestion(elementQuestion.find(".questionTitre").val(), pkQuiz, (data) => {
-          elementQuestion.find(".reponse").each(function () {
-            let elementReponse = $(this)
+      let promise = new Promise((resolve, reject) => {
+        if (pkQuestion && questionNom) {
+          modifierQuestion(pkQuestion, questionNom, (data) => {
+            let reponsePromises = [];
 
-            let pkReponse = elementReponse.data("pk");
-            let reponseNom = elementReponse.find(".reponseTitre").val();
-            let correct = elementReponse.find(".buttonCorrecte").hasClass("bg-blue-700");
-            if (pkReponse && reponseNom) { // UPDATE si la réponse existe déja et a un nom
-              modifierReponse(pkReponse, reponseNom, correct);
-            } else if (reponseNom) { // ADD si la réponse est nouvelle et a un nom
-              rajouterReponse(reponseNom, correct, data.pkQuestion);
-            }
+            elementQuestion.find(".reponse").each(function () {
+              let elementReponse = $(this)
+
+              let pkReponse = elementReponse.data("pk");
+              let reponseNom = elementReponse.find(".reponseTitre").val();
+              let correct = elementReponse.find(".buttonCorrecte").hasClass("bg-blue-700");
+
+              let reponsePromise = new Promise((resolve, reject) => {
+                if (pkReponse && reponseNom) {
+                  modifierReponse(pkReponse, reponseNom, correct, resolve);
+                } else if (reponseNom) {
+                  rajouterReponse(reponseNom, correct, data.pkQuestion, resolve);
+                }
+              });
+
+              reponsePromises.push(reponsePromise);
+            });
+
+            Promise.all(reponsePromises).then(resolve);
           });
-        });
-      }
+        } else if (questionNom) {
+          rajouterQuestion(elementQuestion.find(".questionTitre").val(), pkQuiz, (data) => {
+            let reponsePromises = [];
+
+            elementQuestion.find(".reponse").each(function () {
+              let elementReponse = $(this)
+
+              let pkReponse = elementReponse.data("pk");
+              let reponseNom = elementReponse.find(".reponseTitre").val();
+              let correct = elementReponse.find(".buttonCorrecte").hasClass("bg-blue-700");
+
+              let reponsePromise = new Promise((resolve, reject) => {
+                if (pkReponse && reponseNom) {
+                  modifierReponse(pkReponse, reponseNom, correct, resolve);
+                } else if (reponseNom) {
+                  rajouterReponse(reponseNom, correct, data.pkQuestion, resolve);
+                }
+              });
+
+              reponsePromises.push(reponsePromise);
+            });
+
+            Promise.all(reponsePromises).then(resolve);
+          });
+        }
+      });
+
+      promises.push(promise);
     });
+
+    return Promise.all(promises);
   }
 }

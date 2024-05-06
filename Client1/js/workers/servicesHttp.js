@@ -250,3 +250,16 @@ function deleteElement(pk, element, successCallback, errorCallback) {
     error: errorCallback,
   });
 }
+
+function getQuiz(pkQuiz, successCallback, errorCallback) {
+  $.ajax({
+    type: "GET",
+    dataType: "json",
+    xhrFields: {
+      withCredentials: true
+    },
+    url: BASE_URL + "quiz/get/" + pkQuiz,
+    success: successCallback,
+    error: errorCallback,
+  });
+}
