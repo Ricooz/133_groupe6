@@ -17,4 +17,9 @@ David va s’occuper de la partie permettant la création de quiz et Matteo de l
 
 ## Hébergement
 [Client1 (Création)](https://morisettid.emf-informatique.ch/youquizcreation)
+
 [Client2 (Jeu)](https://richozm.emf-informatique.ch/133)
+
+[API Gateway]((https://backend-6.emf4you.ch))
+
+[API Gateway (Documentation endpoints)]((https://backend-6.emf4you.ch/swagger-ui/index.html))
