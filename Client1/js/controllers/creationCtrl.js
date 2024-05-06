@@ -73,7 +73,7 @@ class CreationCtrl {
         question.getReponses().forEach(reponse => {
           let elementReponse = $(this.nouvelleReponseHTML).clone();
           elementReponse.find(".reponseTitre").text(reponse.getNom())
-          elementReponse.data("pk", question.getPkReponse());
+          elementReponse.data("pk", reponse.getPkReponse());
 
           let elementCorrect = elementReponse.find(".buttonCorrecte");
           if (reponse.isCorrect()) {
@@ -104,14 +104,21 @@ class CreationCtrl {
     });
 
     $(".buttonSave").click((event) => {
-      let nom = $(".titre").val();
-      let description = $(".description").val();
-
-      if (currentQuiz) { // UPDATE si le quiz existe déja
-        
-      } else { // ADD si le quiz est nouveau
-
+      let elementsQuestion = $(".question").clone(true);
+      let elementsReponse = $(".reponse").clone(true);
+      let quizNom = $(".titre").val();
+      let quizDescription = $(".description").val();
+      if (currentQuiz && quizNom) { // UPDATE si le quiz existe déja et a un nom
+        modifierQuiz(currentQuiz.getPkQuiz(), quizNom, quizDescription, (data) => {
+          this.saveQuestions(elementsQuestion, elementsReponse, currentQuiz.getPkQuiz());
+        });
+      } else if (quizNom) { // ADD si le quiz est nouveau et a un nom
+        rajouterQuiz(quizNom, quizDescription, (data) => {
+          this.saveQuestions(elementsQuestion, elementsReponse, data.pkQuiz);
+        });
       }
+
+      this.vueService.changerVue("home");
     });
 
     $(".buttonCancel").click((event) => {
@@ -143,6 +150,48 @@ class CreationCtrl {
       } else {
         $(event.currentTarget).replaceWith(this.buttonUnchecked);
         $(event.currentTarget).data("correcte", false);
+      }
+    });
+  }
+
+  saveQuestions(elementsQuestion, elementsReponse, pkQuiz) {
+    console.log(elementsQuestion.first().data("pk"))
+    elementsQuestion.each(function (index, elementQuestion) { // Questions
+      elementQuestion = $(elementQuestion);
+
+      let pkQuestion = elementQuestion.data("pk");
+      console.log(pkQuestion)
+      let questionNom = elementQuestion.find(".questionTitre").val();
+      if (pkQuestion && questionNom) { // UPDATE si la question existe déja et a un nom
+        modifierQuestion(pkQuestion, questionNom, (data) => {
+          elementQuestion.find(".reponse").each(function () {
+            let elementReponse = $(this)
+
+            let pkReponse = elementReponse.data("pk");
+            let reponseNom = elementReponse.find(".reponseTitre").val();
+            let correct = elementReponse.find(".buttonCorrecte").hasClass("bg-blue-700");
+            if (pkReponse && reponseNom) { // UPDATE si la réponse existe déja et a un nom
+              modifierReponse(pkReponse, reponseNom, correct);
+            } else if (reponseNom) { // ADD si la réponse est nouvelle et a un nom
+              rajouterReponse(reponseNom, correct, data.pkQuestion);
+            }
+          });
+        });
+      } else if (questionNom) { // ADD si la question est nouvelle et a un nom
+        rajouterQuestion(elementQuestion.find(".questionTitre").val(), pkQuiz, (data) => {
+          elementQuestion.find(".reponse").each(function () {
+            let elementReponse = $(this)
+
+            let pkReponse = elementReponse.data("pk");
+            let reponseNom = elementReponse.find(".reponseTitre").val();
+            let correct = elementReponse.find(".buttonCorrecte").hasClass("bg-blue-700");
+            if (pkReponse && reponseNom) { // UPDATE si la réponse existe déja et a un nom
+              modifierReponse(pkReponse, reponseNom, correct);
+            } else if (reponseNom) { // ADD si la réponse est nouvelle et a un nom
+              rajouterReponse(reponseNom, correct, data.pkQuestion);
+            }
+          });
+        });
       }
     });
   }

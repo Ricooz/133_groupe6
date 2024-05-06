@@ -110,31 +110,122 @@ function chargerQuizzes(username, successCallback, errorCallback) {
 function rajouterQuiz(nom, description, successCallback, errorCallback) {
   $.ajax({
     type: "POST",
-    dataType: "json",
     data: {
       nom: nom,
       description: description
     },
     url: BASE_URL + "quiz/add",
+    xhrFields: {
+      withCredentials: true
+    },
     success: successCallback,
     error: errorCallback,
   });
 }
 
 /**
- * Fonction permettant de demander la liste des quiz d'un utilisateur au serveur.
+ * Fonction permettant de demander la modifcation d'un quiz au serveur.
  * @param {type} Fonction de callback lors du retour avec succès de l'appel.
  * @param {type} Fonction de callback en cas d'erreur.
  */
-function rajouterQuiz(pk, nom, description, successCallback, errorCallback) {
+function modifierQuiz(pk, nom, description, successCallback, errorCallback) {
   $.ajax({
-    type: "POST",
-    dataType: "json",
+    type: "PUT",
     data: {
+      pk: pk,
       nom: nom,
       description: description
     },
-    url: BASE_URL + "quiz/add",
+    url: BASE_URL + "quiz/update",
+    xhrFields: {
+      withCredentials: true
+    },
+    success: successCallback,
+    error: errorCallback,
+  });
+}
+
+/**
+ * Fonction permettant de demander le rajout d'une question au serveur.
+ * @param {type} Fonction de callback lors du retour avec succès de l'appel.
+ * @param {type} Fonction de callback en cas d'erreur.
+ */
+function rajouterQuestion(nom, pkQuiz, successCallback, errorCallback) {
+  $.ajax({
+    type: "POST",
+    data: {
+      nom: nom,
+      pkQuiz: pkQuiz
+    },
+    url: BASE_URL + "question/add",
+    xhrFields: {
+      withCredentials: true
+    },
+    success: successCallback,
+    error: errorCallback,
+  });
+}
+
+/**
+ * Fonction permettant de demander la modifcation d'une question au serveur.
+ * @param {type} Fonction de callback lors du retour avec succès de l'appel.
+ * @param {type} Fonction de callback en cas d'erreur.
+ */
+function modifierQuestion(pkQuestion, nom, successCallback, errorCallback) {
+  $.ajax({
+    type: "PUT",
+    data: {
+      pkQuestion: pkQuestion,
+      nom: nom
+    },
+    url: BASE_URL + "question/update",
+    xhrFields: {
+      withCredentials: true
+    },
+    success: successCallback,
+    error: errorCallback,
+  });
+}
+
+/**
+ * Fonction permettant de demander le rajout d'une réponse au serveur.
+ * @param {type} Fonction de callback lors du retour avec succès de l'appel.
+ * @param {type} Fonction de callback en cas d'erreur.
+ */
+function rajouterReponse(nom, correct, pkQuestion, successCallback, errorCallback) {
+  $.ajax({
+    type: "POST",
+    data: {
+      nom: nom,
+      correct: correct,
+      pkQuestion: pkQuestion
+    },
+    url: BASE_URL + "reponse/add",
+    xhrFields: {
+      withCredentials: true
+    },
+    success: successCallback,
+    error: errorCallback,
+  });
+}
+
+/**
+ * Fonction permettant de demander la modifcation d'une réponse au serveur.
+ * @param {type} Fonction de callback lors du retour avec succès de l'appel.
+ * @param {type} Fonction de callback en cas d'erreur.
+ */
+function modifierReponse(pkReponse, nom, correct, successCallback, errorCallback) {
+  $.ajax({
+    type: "PUT",
+    data: {
+      pkReponse: pkReponse,
+      nom: nom,
+      correct: correct
+    },
+    url: BASE_URL + "reponse/update",
+    xhrFields: {
+      withCredentials: true
+    },
     success: successCallback,
     error: errorCallback,
   });
@@ -148,7 +239,6 @@ function rajouterQuiz(pk, nom, description, successCallback, errorCallback) {
 function deleteElement(pk, element, successCallback, errorCallback) {
   $.ajax({
     type: "DELETE",
-    dataType: "json",
     data: {
       pk: pk
     },
