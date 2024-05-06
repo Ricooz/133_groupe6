@@ -20,6 +20,6 @@ David va s’occuper de la partie permettant la création de quiz et Matteo de l
 
 [Client2 (Jeu)](https://richozm.emf-informatique.ch/133)
 
-[API Gateway]((https://backend-6.emf4you.ch))
+[API Gateway](https://backend-6.emf4you.ch)
 
-[API Gateway (Documentation endpoints)]((https://backend-6.emf4you.ch/swagger-ui/index.html))
+[API Gateway (Documentation endpoints)](https://backend-6.emf4you.ch/swagger-ui/index.html)
